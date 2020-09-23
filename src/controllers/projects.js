@@ -2,17 +2,31 @@ const { createProjectModel, getProjectModel, getProjectByIdModel, updateProjectM
 
 module.exports = {
 
-  createProject: (req, res) => {
-    const { image, nameProject, description, deadline, idRecruiter, idWorker } = req.body // harus sama yang diinputkan di postman
-    if (image && nameProject && description && deadline && idRecruiter && idWorker) {
-      createProjectModel([image, nameProject, description, deadline, idRecruiter, idWorker], result => {
-        console.log(result)
-        res.status(201).send({
+  createProject: async (req, res) => {
+    const { nameProject, description, deadline, idRecruiter, idWorker } = req.body // harus sama yang diinputkan di postman
+    if (nameProject && description && deadline && idRecruiter && idWorker) {
+      try {
+        const setData = {
+          nameProject,
+          description,
+          deadline,
+          idRecruiter,
+          idWorker,
+          image: req.file === undefined ? '' : req.file.filename
+        }
+        const create = await createProjectModel(setData)
+        console.log(create)
+        res.send({
           success: true,
-          messages: 'Project Has Been Created',
-          data: req.body
+          message: 'Create Project Success',
+          data: setData
         })
-      })
+      } catch (err) {
+        res.send({
+          success: false,
+          message: 'Bad Request'
+        })
+      }
     } else {
       res.status(500).send({
         success: false,
@@ -90,7 +104,7 @@ module.exports = {
         if (result.affectedRows) {
           res.send({
             success: true,
-            messages: `Account with id ${id} Has Been Updated`
+            messages: `Project with id ${id} Has Been Updated`
           })
         } else {
           res.send({
@@ -120,7 +134,7 @@ module.exports = {
             if (result.affectedRows) {
               res.send({
                 success: true,
-                messages: `Account With id ${id} has been Updated`
+                messages: `Project With id ${id} has been Updated`
               })
             } else {
               res.send({

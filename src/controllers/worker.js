@@ -50,11 +50,10 @@ module.exports = {
     const offset = (page - 1) * limit
 
     searchWorkerModel(searchKey, searchValue, limit, offset, sort, order, result => {
-      console.log(searchKey, searchValue)
       if (result.length) { // result itu berupa Array
         res.send({
           success: true,
-          messages: 'list Worker',
+          messages: 'list worker',
           data: result // result = hasil dari yang diambil dari parameter result
         })
       } else {
@@ -134,7 +133,7 @@ module.exports = {
         } else {
           res.send({
             success: false,
-            messages: 'Data Project Not Found'
+            messages: 'Data worker Not Found'
           })
         }
       })
@@ -167,7 +166,7 @@ module.exports = {
       } else {
         res.send({
           success: false,
-          message: 'Data Project Not Found'
+          message: 'Data worker Not Found'
         })
       }
     })

@@ -1,6 +1,40 @@
-const { createAccountModel, getAccountModel, getAccountByIdModel, updateAccountModel, updatePatchAccountModel, deleteAccountModel, selectAccountModel, updatedAtDate } = require('../models/accountRecruiter')
+const { createAccountModel, getAccountModel, getAccountByIdModel, updateAccountModel, updatePatchAccountModel, deleteAccountModel, selectAccountModel, updatedAtDate, checkEmailModel, registerAccountModel } = require('../models/accountRecruiter')
 
 module.exports = {
+  registerAccount: async (req, res) => {
+    const { name, email, password, noHp, companyName, position } = req.body
+    const setData = {
+      name,
+      email,
+      password,
+      noHp,
+      companyName,
+      position,
+      status: 0
+    }
+
+    try {
+      const checkEmail = await checkEmailModel(email)
+      if (checkEmail.length > 0) {
+        res.send({
+          success: false,
+          message: 'Email Already Registered'
+        })
+      } else {
+        const result = await registerAccountModel(setData)
+        res.send({
+          success: true,
+          message: 'Register Account Success!',
+          data: result
+        })
+      }
+    } catch (err) {
+      res.send({
+        success: false,
+        message: 'Bad Request'
+      })
+    }
+  },
 
   createAccount: (req, res) => {
     const { name, email, password, noHp, companyName, position } = req.body // harus sama yang diinputkan di postman
@@ -19,6 +53,7 @@ module.exports = {
       })
     }
   },
+  
   getAccount: (req, res) => {
     console.log(req.query)
     let { page, limit, search } = req.query

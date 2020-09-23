@@ -59,7 +59,7 @@ module.exports = {
       } else {
         res.send({
           success: true,
-          messages: 'There is no worker on list'
+          messages: 'There is no Recruiter on list'
         })
       }
     })
@@ -133,7 +133,7 @@ module.exports = {
         } else {
           res.send({
             success: false,
-            messages: 'Data Project Not Found'
+            messages: 'Data Recruiter Not Found'
           })
         }
       })
@@ -166,7 +166,7 @@ module.exports = {
       } else {
         res.send({
           success: false,
-          message: 'Data Project Not Found'
+          message: 'Data Recruiter Not Found'
         })
       }
     })

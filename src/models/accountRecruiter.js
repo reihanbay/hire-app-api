@@ -1,6 +1,32 @@
 const db = require('../helpers/db')
 
 module.exports = {
+  registerAccountModel: (setData) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT INTO account_recruiter SET ?', setData, (err, result) => {
+        if (!err) {
+          const newResult = {
+            id: result.insertId,
+            ...setData
+          }
+          resolve(newResult)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+  checkEmailModel: (email) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT email INTO account_recruiter WHERE email = ?', email, (err, result) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
   createAccountModel: (arr, callback) => {
     const query = `INSERT INTO account_recruiter (name, email, password, noHp, companyName, position) VALUES ('${arr[0]}','${arr[1]}','${arr[2]}',${arr[3]},'${arr[4]}','${arr[5]}')`
     db.query(query, (_err, result, _fields) => {
@@ -12,12 +38,6 @@ module.exports = {
       if (!err) {
         callback(result)
       }
-    //   else {
-    //     res.send({
-    //       success: false,
-    //       messages: 'Internal Server error'
-    //     })
-    //   }
     })
   },
   getAccountByIdModel: (id, callback) => {

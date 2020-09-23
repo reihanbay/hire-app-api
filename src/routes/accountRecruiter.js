@@ -2,9 +2,9 @@ const { Router } = require('express')
 
 const router = Router()
 
-const { createAccount, getAccount, getAccountById, updateAccount, updatePatchAccount, deleteAccount } = require('../controllers/accountRecruiter')
+const { registerAccount, getAccount, getAccountById, updateAccount, updatePatchAccount, deleteAccount } = require('../controllers/accountRecruiter')
 
-router.post('/', createAccount)
+router.post('/register', registerAccount)
 router.get('/', getAccount)
 router.get('/:id', getAccountById)
 router.put('/:id', updateAccount)

@@ -1,23 +1,51 @@
 const db = require('../helpers/db')
 
 module.exports = {
-  createAccountModel: (arr, callback) => {
-    const query = `INSERT INTO account_worker (name, email, password, noHp) VALUES ('${arr[0]}','${arr[1]}','${arr[2]}',${arr[3]})`
-    db.query(query, (_err, result, _fields) => {
-      callback(result)
+
+  postAccount: (setData) => {
+    return new Promise((resolve, reject) => {
+      db.query('INSERT INTO account_worker SET ?', setData, (err, result) => {
+        if (!err) {
+          const newResult = {
+            id: result.insertId,
+            ...setData
+          }
+          delete newResult.password
+          resolve(newResult)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
+  checkEmailModel: (email) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT email FROM account_worker WHERE email = ?', email, (err, result) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+  loginAccountModel: (email) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT idAccount, email, password, status FROM account_worker WHERE email = ?', email, (err, result) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+
   getAccountModel: (searchKey, searchValue, limit, offset, callback) => {
     db.query(`SELECT * FROM account_worker WHERE ${searchKey} LIKE '%${searchValue}%' LIMIT ${limit} OFFSET ${offset}`, (err, result, _fields) => {
       if (!err) {
         callback(result)
       }
-      // else {
-      //   res.send({
-      //     success: false,
-      //     messages: 'Internal Server error'
-      //   })
-      // }
     })
   },
   getAccountByIdModel: (id, callback) => {

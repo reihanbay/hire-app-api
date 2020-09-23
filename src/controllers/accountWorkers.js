@@ -1,24 +1,91 @@
-const { createAccountModel, getAccountModel, getAccountByIdModel, updateAccountModel, updatePatchAccountModel, deleteAccountModel, selectAccountModel, updatedAtDate } = require('../models/accountWorkers')
+const { getAccountModel, checkEmailModel, getAccountByIdModel, updateAccountModel, updatePatchAccountModel, deleteAccountModel, selectAccountModel, updatedAtDate, postAccount, loginAccountModel } = require('../models/accountWorkers')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 
 module.exports = {
 
-  createAccount: (req, res) => {
-    const { name, email, password, noHp } = req.body // harus sama yang diinputkan di postman
+  registerAccount: async (req, res) => {
+    const { name, email, password, noHp } = req.body
     if (name && email && password && noHp) {
-      createAccountModel([name, email, password, noHp], result => {
-        res.status(201).send({
-          success: true,
-          messages: 'Account Has Been Created',
-          data: req.body
+      const salt = bcrypt.genSaltSync(10)
+      const encryptPassword = bcrypt.hashSync(password, salt)
+      const setData = {
+        name,
+        email,
+        password: encryptPassword,
+        noHp,
+        status: 0
+      }
+      try {
+        const checkEmail = await checkEmailModel(email)
+        if (checkEmail.length > 0) {
+          res.send({
+            success: false,
+            message: 'Email Already Registered'
+          })
+        } else {
+          const result = await postAccount(setData)
+          console.log(result)
+          res.send({
+            success: true,
+            message: 'Register Account Success!',
+            data: result
+          })
+        }
+      } catch (err) {
+        console.log(err)
+        res.send({
+          success: false,
+          message: 'Bad Request'
         })
-      })
+      }
     } else {
-      res.status(500).send({
+      res.send({
         success: false,
-        messages: 'Field must be filled'
+        message: 'Field must be filled!'
       })
     }
   },
+
+  loginAccount: async (req, res) => {
+    try {
+      const { email, password } = req.body
+      const checkData = await loginAccountModel(email)
+      if (checkData.length >= 1) {
+        const checkPassword = bcrypt.compareSync(
+          password, checkData[0].password)
+        if (checkPassword) {
+          const { idAccount, name, email, status } = checkData[0]
+          let payload = { idAccount, name, email, status }
+          const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '1h' })
+          payload = { ...payload, token }
+          res.send({
+            success: true,
+            message: 'Success Login',
+            data: payload
+          })
+        } else {
+          res.send({
+            success: false,
+            message: 'Wrong Password'
+          })
+        }
+      } else {
+        res.send({
+          success: false,
+          message: 'Email not registered'
+        })
+      }
+    } catch (err) {
+      console.log(err)
+      res.send({
+        success: false,
+        message: 'Bad Request'
+      })
+    }
+  },
+
   getAccount: (req, res) => {
     console.log(req.query)
     let { page, limit, search } = req.query
@@ -164,7 +231,7 @@ module.exports = {
       } else {
         res.send({
           success: false,
-          message: 'Data Project Not Found'
+          message: 'Data Worker Not Found'
         })
       }
     })

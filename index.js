@@ -1,7 +1,8 @@
-// const { request } = require('express')
 const express = require('express')
+const cors = require('cors')
 const app = express()
 const bodyParser = require('body-parser')
+require('dotenv').config()
 app.use(bodyParser.urlencoded({ extended: false }))
 
 const accountWorkerRouter = require('./src/routes/accountWorkers')
@@ -23,7 +24,14 @@ app.use('/account_worker', accountWorkerRouter)
 app.use('/account_recruiter', accountRecruiterRouter)
 app.use('/worker', workerRouter)
 app.use('/recruiter', recruiterRouter)
+app.use(cors())
 
-app.listen(8080, () => {
-  console.log('Server 8080 running!')
+app.use((request, response, next) => {
+  response.header('Access-Control-Allow-Origin', '*')
+  response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+  next()
+})
+
+app.listen(process.env.PORT, () => {
+  console.log(`Server ${process.env.PORT} running!`)
 })

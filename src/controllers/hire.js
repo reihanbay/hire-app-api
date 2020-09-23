@@ -58,7 +58,7 @@ module.exports = {
       } else {
         res.send({
           success: true,
-          messages: 'There is no worker on list'
+          messages: 'There is no hire on list'
         })
       }
     })
@@ -69,13 +69,13 @@ module.exports = {
       if (result.length) {
         res.send({
           success: true,
-          message: `Data Project ${id}`,
+          message: `Data Hire ${id}`,
           data: result[0]
         })
       } else {
         res.send({
           success: false,
-          message: `Data Account ${id} not found`
+          message: `Data Hire ${id} not found`
         })
       }
     })
@@ -90,7 +90,7 @@ module.exports = {
         if (result.affectedRows) {
           res.send({
             success: true,
-            messages: `Account with id ${id} Has Been Updated`
+            messages: `Hire with id ${id} Has Been Updated`
           })
         } else {
           res.send({
@@ -120,7 +120,7 @@ module.exports = {
             if (result.affectedRows) {
               res.send({
                 success: true,
-                messages: `Account With id ${id} has been Updated`
+                messages: `Hire With id ${id} has been Updated`
               })
             } else {
               res.send({
@@ -132,7 +132,7 @@ module.exports = {
         } else {
           res.send({
             success: false,
-            messages: 'Data Project Not Found'
+            messages: 'Data Hire Not Found'
           })
         }
       })
@@ -153,7 +153,7 @@ module.exports = {
           if (result.affectedRows) {
             res.send({
               success: true,
-              message: `Project with id ${id} has been deleted`
+              message: `Hire with id ${id} has been deleted`
             })
           } else {
             res.send({
