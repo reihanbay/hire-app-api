@@ -1,61 +1,100 @@
 const db = require('../helpers/db')
 
 module.exports = {
-  createWorkerModel: (arr, idAccount, callback) => {
-    const query = `INSERT INTO worker (nameWorker, jobTitle, statusJob, city, workPlace, description, image, idAccount) VALUES ('${arr[0]}','${arr[1]}','${arr[2]}','${arr[3]}','${arr[4]}','${arr[5]}','${arr[6]}',${idAccount})`
-    db.query(query, (_err, result, _fields) => {
-      callback(result)
+  createWorkerModel: (setData) => {
+    return new Promise((resolve, reject) => {
+      const query = 'INSERT INTO worker SET ?'
+      db.query(query, setData, (err, result, _fields) => {
+        if (!err) {
+          const newResult = {
+            ...setData
+          }
+          resolve(newResult)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
-  getWorkerModel: (searchKey, searchValue, limit, offset, callback) => {
-    db.query(`SELECT * FROM worker WHERE ${searchKey} LIKE '%${searchValue}%' LIMIT ${limit} OFFSET ${offset}`, (err, result, _fields) => {
-      if (!err) {
-        callback(result)
+
+  checkIdAccountModel: (idAccount) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT idAccount FROM worker WHERE idAccount = ?', idAccount, (err, result) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+
+  searchWorkerModel: (searchKey, searchValue, limit, offset, sort, order) => {
+    return new Promise((resolve, reject) => {
+      let sortWorker = ''
+      if (sort != null) {
+        if (order != null) {
+          sortWorker = `ORDER BY ${sort} ${order}`
+        } else {
+          sortWorker = 'ORDER BY nameWorker ASC'
+        }
       }
+      db.query(`SELECT worker.idWorker, worker.image, worker.nameWorker, worker.jobTitle, worker.statusJob, worker.city, GROUP_CONCAT(skill.skill) AS skill FROM worker INNER JOIN skill ON worker.idWorker = skill.idWorker 
+      WHERE ${searchKey} LIKE '%${searchValue}%' GROUP BY idWorker ${sortWorker} LIMIT ${limit} OFFSET ${offset} `, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
 
-  searchWorkerModel: (searchKey, searchValue, limit, offset, sort, order, callback) => {
-    let sortWorker = ''
-    if (sort != null) {
-      if (order != null) {
-        sortWorker = `ORDER BY ${sort} ${order}`
-      } else {
-        sortWorker = 'ORDER BY nameWorker ASC'
-      }
-    }
-
-    db.query(`SELECT worker.idWorker, worker.image, worker.nameWorker, worker.jobTitle, worker.statusJob, worker.city, GROUP_CONCAT(skill.skill) FROM worker INNER JOIN skill ON worker.idWorker = skill.idWorker 
-    WHERE ${searchKey} LIKE '%${searchValue}%' GROUP BY idWorker ${sortWorker} LIMIT ${limit} OFFSET ${offset} `, (_err, result, _field) => {
-      callback(result)
+  getWorkerByIdModel: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM worker  WHERE idWorker = ?', id, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
 
-  getWorkerByIdModel: (id, callback) => {
-    db.query(`SELECT * FROM worker  WHERE idWorker = ${id}`, (_err, result, _field) => {
-      callback(result)
+  updateWorkerModel: (arr, id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`UPDATE worker SET nameWorker='${arr[0]}', jobTitle='${arr[1]}', statusJob='${arr[2]}', city='${arr[3]}', workPlace='${arr[4]}', description='${arr[5]}', image='${arr[6]}'
+        WHERE idWorker = ?`, id, (err, result, _fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
-  updateWorkerModel: (arr, id, callback) => {
-    db.query(`SELECT * FROM worker WHERE idWorker = ${id}`, (_err, result, _field) => {
-      if (result.length) {
-        db.query(`UPDATE worker SET nameWorker='${arr[0]}', jobTitle='${arr[1]}', statusJob='${arr[2]}', city='${arr[3]}', workPlace='${arr[4]}', description='${arr[5]}', image='${arr[6]}'
-         WHERE idWorker = ${id}`, (_err, result, _fields) => {
-          callback(result)
-        })
-      }
-    })
-  },
-  updatePatchWorkerModel: (data, id, callback) => {
-    var query = `UPDATE worker SET ${data} WHERE idWorker = ${id}`
-    db.query(query, (_err, result, _field) => {
-      callback(result)
+  updatePatchWorkerModel: (data, id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`UPDATE worker SET ${data} WHERE idWorker = ?`, id, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
 
-  deleteWorkerModel: (id, callback) => {
-    db.query(`DELETE FROM worker WHERE idWorker = ${id}`, (_err, result, _field) => {
-      callback(result)
+  deleteWorkerModel: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query('DELETE FROM worker WHERE idWorker = ? ', id, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
 
@@ -73,9 +112,15 @@ module.exports = {
     db.query(`UPDATE worker SET updatedAt='${updatedAt}' WHERE idWorker = ${id}`)
   },
 
-  selectWorkerModel: (id, callback) => {
-    db.query(`SELECT * FROM worker WHERE idWorker = ${id}`, (_err, result, _field) => {
-      callback(result)
+  selectWorkerModel: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM worker WHERE idAccount = ${id}`, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error('Id Account not selected'))
+        }
+      })
     })
   }
 }

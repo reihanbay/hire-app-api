@@ -41,38 +41,62 @@ module.exports = {
     })
   },
 
-  getAccountModel: (searchKey, searchValue, limit, offset, callback) => {
-    db.query(`SELECT * FROM account_worker WHERE ${searchKey} LIKE '%${searchValue}%' LIMIT ${limit} OFFSET ${offset}`, (err, result, _fields) => {
-      if (!err) {
-        callback(result)
-      }
+  getAccountModel: (searchKey, searchValue, limit, offset) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM account_worker WHERE ${searchKey} LIKE '%${searchValue}%' LIMIT ${limit} OFFSET ${offset}`, (err, result, _fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
-  getAccountByIdModel: (id, callback) => {
-    db.query(`SELECT * FROM account_worker  WHERE idAccount = ${id}`, (_err, result, _field) => {
-      callback(result)
+  getAccountByIdModel: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM account_worker  WHERE idAccount = ${id}`, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
-  updateAccountModel: (arr, id, callback) => {
-    db.query(`SELECT * FROM account_worker WHERE idAccount = ${id}`, (_err, result, _field) => {
-      if (result.length) {
-        db.query(`UPDATE account_worker SET name='${arr[0]}', email='${arr[1]}', password='${arr[2]}', noHp=${arr[3]}
-         WHERE idAccount = ${id}`, (_err, result, _fields) => {
-          callback(result)
-        })
-      }
+  updateAccountModel: (arr, id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`UPDATE account_worker SET name='${arr[0]}', email='${arr[1]}', password='${arr[2]}', noHp=${arr[3]} WHERE idAccount = ?`, id, function (err, result, _fields) {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
-  updatePatchAccountModel: (data, id, callback) => {
-    var query = `UPDATE account_worker SET ${data} WHERE idAccount = ${id}`
-    db.query(query, (_err, result, _field) => {
-      callback(result)
+  updatePatchAccountModel: (data, id) => {
+    return new Promise((resolve, reject) => {
+      var query = `UPDATE account_worker SET ${data} WHERE idAccount = ${id}`
+      db.query(query, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
 
-  deleteAccountModel: (id, callback) => {
-    db.query(`DELETE FROM account_worker WHERE idAccount = ${id}`, (_err, result, _field) => {
-      callback(result)
+  deleteAccountModel: (id) => {
+    return new Promise((resolve, reject) => {
+      var query = `DELETE FROM account_worker WHERE idAccount = ${id}`
+      db.query(query, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
 
@@ -90,9 +114,15 @@ module.exports = {
     db.query(`UPDATE account_worker SET updatedAt='${updatedAt}' WHERE idAccount = ${id}`)
   },
 
-  selectAccountModel: (id, callback) => {
-    db.query(`SELECT * FROM account_worker WHERE idAccount = ${id}`, (_err, result, _field) => {
-      callback(result)
+  selectAccountModel: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM account_worker WHERE idAccount = ${id}`, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error('Id Account not selected'))
+        }
+      })
     })
   }
 }

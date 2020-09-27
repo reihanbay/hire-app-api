@@ -3,12 +3,14 @@ const db = require('../helpers/db')
 module.exports = {
   registerAccountModel: (setData) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT INTO account_recruiter SET ?', setData, (err, result) => {
+      db.query('INSERT INTO account_recruiter SET ?', setData, (err, result) => {
         if (!err) {
           const newResult = {
             id: result.insertId,
             ...setData
           }
+          delete newResult.password
+          console.log(newResult)
           resolve(newResult)
         } else {
           reject(new Error(err))
@@ -18,7 +20,7 @@ module.exports = {
   },
   checkEmailModel: (email) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT email INTO account_recruiter WHERE email = ?', email, (err, result) => {
+      db.query('SELECT email FROM account_recruiter WHERE email = ?', email, (err, result) => {
         if (!err) {
           resolve(result)
         } else {
@@ -27,44 +29,77 @@ module.exports = {
       })
     })
   },
-  createAccountModel: (arr, callback) => {
-    const query = `INSERT INTO account_recruiter (name, email, password, noHp, companyName, position) VALUES ('${arr[0]}','${arr[1]}','${arr[2]}',${arr[3]},'${arr[4]}','${arr[5]}')`
-    db.query(query, (_err, result, _fields) => {
-      callback(result)
+
+  loginAccountModel: (email) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT idAccount, email, password FROM account_recruiter WHERE email = ?', email, (err, result) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
-  getAccountModel: (searchKey, searchValue, limit, offset, callback) => {
-    db.query(`SELECT * FROM account_recruiter WHERE ${searchKey} LIKE '%${searchValue}%' LIMIT ${limit} OFFSET ${offset}`, (err, result, _fields) => {
-      if (!err) {
-        callback(result)
-      }
-    })
-  },
-  getAccountByIdModel: (id, callback) => {
-    db.query(`SELECT * FROM account_recruiter  WHERE idAccount = ${id}`, (_err, result, _field) => {
-      callback(result)
-    })
-  },
-  updateAccountModel: (arr, id, callback) => {
-    db.query(`SELECT * FROM account_recruiter WHERE idAccount = ${id}`, (_err, result, _field) => {
-      if (result.length) {
-        db.query(`UPDATE account_recruiter SET name='${arr[0]}', email='${arr[1]}', password='${arr[2]}', noHp=${arr[3]}, companyName='${arr[4]}', position='${arr[5]}'
-         WHERE idAccount = ${id}`, (_err, result, _fields) => {
-          callback(result)
-        })
-      }
-    })
-  },
-  updatePatchAccountModel: (data, id, callback) => {
-    var query = `UPDATE account_recruiter SET ${data} WHERE idAccount = ${id}`
-    db.query(query, (_err, result, _field) => {
-      callback(result)
+  getAccountModel: (searchKey, searchValue, limit, offset) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM account_recruiter WHERE ${searchKey} LIKE '%${searchValue}%' LIMIT ${limit} OFFSET ${offset}`, (err, result, _fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
 
-  deleteAccountModel: (id, callback) => {
-    db.query(`DELETE FROM account_recruiter WHERE idAccount = ${id}`, (_err, result, _field) => {
-      callback(result)
+  getAccountByIdModel: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM account_recruiter  WHERE idAccount = ${id}`, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+
+  updateAccountModel: (arr, id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`UPDATE account_recruiter SET name='${arr[0]}', email='${arr[1]}', password='${arr[2]}', noHp=${arr[3]}, companyName='${arr[4]}', position='${arr[5]}'
+         WHERE idAccount = ${id}`, (err, result, _fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+
+  updatePatchAccountModel: (data, id) => {
+    return new Promise((resolve, reject) => {
+      var query = `UPDATE account_recruiter SET ${data} WHERE idAccount = ${id}`
+      db.query(query, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+
+  deleteAccountModel: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query('DELETE FROM account_recruiter WHERE idAccount = ?', id, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
 
@@ -82,9 +117,15 @@ module.exports = {
     db.query(`UPDATE account_recruiter SET updatedAt='${updatedAt}' WHERE idAccount = ${id}`)
   },
 
-  selectAccountModel: (id, callback) => {
-    db.query(`SELECT * FROM account_recruiter WHERE idAccount = ${id}`, (_err, result, _field) => {
-      callback(result)
+  selectAccountModel: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM account_recruiter WHERE idAccount = ${id}`, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   }
 }

@@ -1,19 +1,46 @@
-const { createRecruiterModel, getRecruiterModel, getRecruiterByIdModel, updateRecruiterModel, updatePatchRecruiterModel, deleteRecruiterModel, selectRecruiterModel, updatedAtDate } = require('../models/recruiter')
+const { createRecruiterModel, checkIdAccountModel, getRecruiterModel, getRecruiterByIdModel, updateRecruiterModel, updatePatchRecruiterModel, deleteRecruiterModel, selectRecruiterModel, updatedAtDate } = require('../models/recruiter')
 
 module.exports = {
 
-  createRecruiter: (req, res) => {
+  createRecruiter: async (req, res) => {
     const idAccount = req.params.id
-    const { nameRecruiter, sectorCompany, city, description, image, instagram, linkedin, website } = req.body // harus sama yang diinputkan di postman
-    if (nameRecruiter && sectorCompany && city && description && image && instagram && linkedin && website) {
-      createRecruiterModel([nameRecruiter, sectorCompany, city, description, image, instagram, linkedin, website], idAccount, result => {
-        console.log(result)
-        res.status(201).send({
-          success: true,
-          messages: 'Profile Has Been Created',
-          data: req.body
+    const { nameRecruiter, sectorCompany, city, description, instagram, linkedin, website } = req.body
+    const image = req.file === undefined ? '' : req.file.filename
+    if (nameRecruiter && sectorCompany && city && description && instagram && linkedin && website && image) {
+      const setData = {
+        nameRecruiter,
+        sectorCompany,
+        city,
+        description,
+        image,
+        instagram,
+        linkedin,
+        website,
+        idAccount
+      }
+      try {
+        const checkId = await checkIdAccountModel(idAccount)
+        console.log(checkId);
+        if (checkId.length === 0) {
+          await createRecruiterModel(setData)
+          res.send({
+            success: true,
+            messages: 'Profile Has Been Created',
+            data: req.body
+          })
+        } else {
+          res.send({
+            success: false,
+            message: 'Id already created'
+          })
+        }
+      } catch (err) {
+        console.log(err);
+        res.send({
+          success: false,
+          messages: 'Bad Request!'
         })
-      })
+      }
     } else {
       res.status(500).send({
         success: false,
@@ -22,7 +49,7 @@ module.exports = {
     }
   },
 
-  getRecruiter: (req, res) => {
+  getRecruiter: async (req, res) => {
     console.log(req.query)
     let { page, limit, search } = req.query
     let searchKey = ''
@@ -48,25 +75,31 @@ module.exports = {
     }
 
     const offset = (page - 1) * limit
-
-    getRecruiterModel(searchKey, searchValue, limit, offset, result => {
-      if (result.length) { // result itu berupa Array
+    try {
+      const result = await getRecruiterModel(searchKey, searchValue, limit, offset)
+      if (result.length) {
         res.send({
           success: true,
           messages: 'list Recruiter',
-          data: result // result = hasil dari yang diambil dari parameter result
+          data: result
         })
       } else {
         res.send({
-          success: true,
+          success: false,
           messages: 'There is no Recruiter on list'
         })
       }
-    })
+    } catch (err) {
+      res.send({
+        success: false,
+        messages: 'Bad Request!'
+      })
+    }
   },
-  getRecruiterById: (req, res) => {
+  getRecruiterById: async (req, res) => {
     const { id } = req.params
-    getRecruiterByIdModel(id, result => {
+    try {
+      const result = await getRecruiterByIdModel(id)
       if (result.length) {
         res.send({
           success: true,
@@ -79,96 +112,132 @@ module.exports = {
           message: `Data Account ${id} not found`
         })
       }
-    })
+    } catch (err) {
+      res.send({
+        success: false,
+        message: 'Bad Request!'
+      })
+    }
   },
-  updateRecruiter: (req, res) => {
+
+  updateRecruiter: async (req, res) => {
     const id = req.params.id
-    const { nameRecruiter, sectorCompany, city, description, image, instagram, linkedin, website } = req.body
+    const { nameRecruiter, sectorCompany, city, description, instagram, linkedin, website } = req.body
+    const image = req.file === undefined ? '' : req.file.filename
     if (nameRecruiter.trim() && sectorCompany.trim() && city.trim() && description.trim() && image.trim() && instagram.trim() && linkedin.trim() && website.trim()) {
-      updateRecruiterModel([nameRecruiter, sectorCompany, city, description, image, instagram, linkedin, website], id, result => {
-        updatedAtDate(id)
-        console.log(result)
-        if (result.affectedRows) {
-          res.send({
-            success: true,
-            messages: `Account with id ${id} Has Been Updated`
-          })
-        } else {
-          res.send({
-            success: false,
-            messages: 'Field must be filled'
-          })
-        }
-      })
-    } else {
-      res.send({
-        success: false,
-        messages: 'error!'
-      })
-    }
-  },
-  updatePatchRecruiter: (req, res) => {
-    const id = req.params.id
-    const { nameRecruiter = '', sectorCompany = '', city = '', description = '', image = '', instagram = '', linkedin = '', website = '' } = req.body
-    if (nameRecruiter.trim() || sectorCompany.trim() || city.trim() || description.trim() || image.trim() || instagram.trim() || linkedin.trim() || website.trim()) {
-      selectRecruiterModel(id, result => {
-        const data = Object.entries(req.body).map(item => {
-          return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
-        })
-        if (result.length) {
-          updatePatchRecruiterModel(data, id, result => {
-            updatedAtDate(id)
-            if (result.affectedRows) {
-              res.send({
-                success: true,
-                messages: `Account With id ${id} has been Updated`
-              })
-            } else {
-              res.send({
-                success: false,
-                messages: 'Failed to Update'
-              })
-            }
-          })
-        } else {
-          res.send({
-            success: false,
-            messages: 'Data Recruiter Not Found'
-          })
-        }
-      })
-    } else {
-      res.send({
-        success: false,
-        message: 'ERROR!'
-      })
-    }
-  },
-
-  deleteRecruiter: (req, res) => {
-    const { id } = req.params
-
-    selectRecruiterModel(id, result => {
-      if (result.length) {
-        deleteRecruiterModel(id, result => {
+      try {
+        const select = await selectRecruiterModel(id)
+        if (select.length) {
+          const result = await updateRecruiterModel([nameRecruiter, sectorCompany, city, description, image, instagram, linkedin, website], id)
           if (result.affectedRows) {
+            updatedAtDate(id)
             res.send({
               success: true,
-              message: `Account with id ${id} has been deleted`
+              messages: `Account with id ${id} Has Been Updated`
             })
           } else {
             res.send({
               success: false,
-              message: 'Failed to delete!'
+              messages: 'Update Account Failed'
             })
           }
+        } else {
+          res.send({
+            success: false,
+            message: `Account with id ${id} not found`
+          })
+        }
+      } catch (err) {
+        res.send({
+          success: false,
+          message: 'Bad Request'
         })
+      }
+    } else {
+      res.send({
+        success: false,
+        messages: 'Field must be filled'
+      })
+    }
+  },
+
+  updatePatchRecruiter: async (req, res) => {
+    const id = req.params.id
+    const { nameRecruiter = '', sectorCompany = '', city = '', description = '', instagram = '', linkedin = '', website = '' } = req.body
+    const image = req.file === undefined ? '' : req.file.filename
+    if (nameRecruiter.trim() || sectorCompany.trim() || city.trim() || description.trim() || image.trim() || instagram.trim() || linkedin.trim() || website.trim()) {
+      const setData = {
+        ...req.body,
+        image
+      }
+      const data = Object.entries(setData).map(item => {
+        return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
+      })
+      try {
+        const select = await selectRecruiterModel(id)
+        if (select.length) {
+          const result = await updatePatchRecruiterModel(data, id)
+          if (result.affectedRows) {
+            updatedAtDate(id)
+            res.send({
+              success: true,
+              messages: `Account With id ${id} has been Updated`
+            })
+          } else {
+            res.send({
+              success: false,
+              messages: 'Failed to Update'
+            })
+          }
+        } else {
+          res.send({
+            success: false,
+            message: 'Recruiter not found'
+          })
+        }
+      } catch (err) {
+        res.send({
+          success: false,
+          message: 'Bad Request!'
+        })
+      }
+    } else {
+      res.send({
+        success: false,
+        message: 'Field must be filled'
+      })
+    }
+  },
+
+  deleteRecruiter: async (req, res) => {
+    const { id } = req.params
+
+    try {
+      const select = await selectRecruiterModel(id)
+      if (select.length) {
+        const result = await deleteRecruiterModel(id)
+        if (result.affectedRows) {
+          res.send({
+            success: true,
+            message: `Account with id ${id} has been deleted`
+          })
+        } else {
+          res.send({
+            success: false,
+            message: 'Failed to delete!'
+          })
+        }
       } else {
         res.send({
           success: false,
-          message: 'Data Recruiter Not Found'
+          message: 'Recruiter Not Found'
         })
       }
-    })
+    } catch (err) {
+      res.send({
+        success: false,
+        message: 'Bad Request!'
+      })
+    }
   }
 }

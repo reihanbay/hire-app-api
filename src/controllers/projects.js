@@ -35,7 +35,7 @@ module.exports = {
     }
   },
 
-  getDataProject: (req, res) => {
+  getDataProject: async (req, res) => {
     let { page, limit, search } = req.query
     let searchKey = ''
     let searchValue = ''
@@ -60,9 +60,8 @@ module.exports = {
     }
 
     const offset = (page - 1) * limit
-
-    getProjectModel(searchKey, searchValue, limit, offset, result => {
-      console.log(result)
+    try {
+      const result = await getProjectModel(searchKey, searchValue, limit, offset)
       if (result.length) { // result itu berupa Array
         res.send({
           success: true,
@@ -71,15 +70,22 @@ module.exports = {
         })
       } else {
         res.send({
-          success: true,
+          success: false,
           messages: 'There is no worker on list'
         })
       }
-    })
+    } catch (err) {
+      res.send({
+        success: false,
+        message: 'Bad Request'
+      })
+    }
   },
-  getDataProjectById: (req, res) => {
+
+  getDataProjectById: async (req, res) => {
     const { id } = req.params
-    getProjectByIdModel(id, result => {
+    try {
+      const result = await getProjectByIdModel(id)
       if (result.length) {
         res.send({
           success: true,
@@ -92,96 +98,134 @@ module.exports = {
           message: `Data Account ${id} not found`
         })
       }
-    })
-  },
-  updateProject: (req, res) => {
-    const id = req.params.id
-    const { image, nameProject, description, deadline, idRecruiter, idWorker } = req.body
-    if (image.trim() && nameProject.trim() && description.trim() && deadline.trim() && idRecruiter.trim() && idWorker.trim()) {
-      updateProjectModel([image, nameProject, description, deadline, idRecruiter, idWorker], id, result => {
-        updatedAtDate(id)
-        console.log(result)
-        if (result.affectedRows) {
-          res.send({
-            success: true,
-            messages: `Project with id ${id} Has Been Updated`
-          })
-        } else {
-          res.send({
-            success: false,
-            messages: 'Field must be filled'
-          })
-        }
-      })
-    } else {
+    } catch (err) {
       res.send({
         success: false,
-        messages: 'error!'
+        message: 'Bad Request'
       })
     }
   },
-  updatePatchProject: (req, res) => {
+  updateProject: async (req, res) => {
     const id = req.params.id
-    const { image = '', nameProject = '', description = '', deadline = '', idRecruiter = '', idWorker = '' } = req.body
-    if (image.trim() || nameProject.trim() || description.trim() || deadline.trim() || idRecruiter.trim() || idWorker.trim()) {
-      selectProjectModel(id, result => {
-        const data = Object.entries(req.body).map(item => {
-          return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
-        })
-        if (result.length) {
-          updatePatchProjectModel(data, id, result => {
+    const { nameProject, description, deadline, idRecruiter, idWorker } = req.body
+    const image = req.file === undefined ? '' : req.file.filename
+    if (image.trim() && nameProject.trim() && description.trim() && deadline.trim() && idRecruiter.trim() && idWorker.trim()) {
+      try {
+        const select = await selectProjectModel(id)
+        if (select.length) {
+          const result = await updateProjectModel([image, nameProject, description, deadline, idRecruiter, idWorker], id)
+          if (result.affectedRows) {
             updatedAtDate(id)
-            if (result.affectedRows) {
-              res.send({
-                success: true,
-                messages: `Project With id ${id} has been Updated`
-              })
-            } else {
-              res.send({
-                success: false,
-                messages: 'Failed to Update'
-              })
-            }
+            res.send({
+              success: true,
+              messages: `Project with id ${id} Has Been Updated`
+            })
+          } else {
+            res.send({
+              success: false,
+              messages: 'Update Project Failed'
+            })
+          }
+        } else {
+          res.send({
+            success: false,
+            messages: 'Project Not Found'
           })
+        }
+      } catch (err) {
+        res.send({
+          success: false,
+          messages: 'error!'
+        })
+      }
+    } else {
+      res.send({
+        success: false,
+        messages: 'Field must be filled'
+      })
+    }
+  },
+  updatePatchProject: async (req, res) => {
+    const id = req.params.id
+    const { nameProject = '', description = '', deadline = '', idRecruiter = '', idWorker = '' } = req.body
+    const image = req.file === undefined ? '' : req.file.filename
+    if (image.trim() || nameProject.trim() || description.trim() || deadline.trim() || idRecruiter.trim() || idWorker.trim()) {
+      const setData = {
+        ...req.body,
+        image
+      }
+      const data = Object.entries(setData).map(item => {
+        if ((item[1]) !== setData.deadline) {
+          return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
+        } else {
+          return (item[1]) === setData.deadline ? `${item[0]}='${setData.deadline}'` : 'Error Request!'
+        }
+      })
+      try {
+        console.log(data)
+        const select = await selectProjectModel(id)
+        if (select.length) {
+          const result = await updatePatchProjectModel(data, id)
+          if (result.affectedRows) {
+            res.send({
+              success: true,
+              messages: `Project With id ${id} has been Updated`
+            })
+          } else {
+            res.send({
+              success: false,
+              messages: 'Failed to Update'
+            })
+          }
         } else {
           res.send({
             success: false,
             messages: 'Data Project Not Found'
           })
         }
-      })
+      } catch (err) {
+        res.send({
+          success: false,
+          message: 'Bad Request'
+        })
+      }
     } else {
       res.send({
         success: false,
-        message: 'ERROR!'
+        message: 'Field must be filled'
       })
     }
   },
 
-  deleteProject: (req, res) => {
+  deleteProject: async (req, res) => {
     const { id } = req.params
 
-    selectProjectModel(id, result => {
-      if (result.length) {
-        deleteProjectModel(id, result => {
-          if (result.affectedRows) {
-            res.send({
-              success: true,
-              message: `Project with id ${id} has been deleted`
-            })
-          } else {
-            res.send({
-              success: false,
-              message: 'Failed to delete!'
-            })
-          }
-        })
+    try {
+      const select = await selectProjectModel(id)
+      if (select.length) {
+        const result = await deleteProjectModel(id)
+        if (result.affectedRows) {
+          res.send({
+            success: true,
+            message: `Project with id ${id} has been deleted`
+          })
+        } else {
+          res.send({
+            success: false,
+            message: 'Failed to delete!'
+          })
+        }
       } else {
         res.send({
           success: false,
-          message: 'Data Project Not Found'
+          message: 'Project Not Found'
         })
       }
-    })
+    } catch (err) {
+      res.send({
+        success: false,
+        message: 'Bad Request!'
+      })
+    }
   }
 }

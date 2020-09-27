@@ -1,44 +1,78 @@
 const db = require('../helpers/db')
 
 module.exports = {
-  createHireModel: (arr, callback) => {
-    const query = `INSERT INTO hire (projectJob, message, statusConfirm, dateConfirm, price, idWorker, idProject) VALUES ('${arr[0]}','${arr[1]}',${arr[2]},'${arr[3]}',${arr[4]},${arr[5]}, ${arr[6]})`
-    db.query(query, (_err, result, _fields) => {
-      callback(result)
-    })
-  },
-  getHireModel: (searchKey, searchValue, limit, offset, callback) => {
-    db.query(`SELECT * FROM hire WHERE ${searchKey} LIKE '%${searchValue}%' LIMIT ${limit} OFFSET ${offset}`, (err, result, _fields) => {
-      if (!err) {
-        callback(result)
-      }
-    })
-  },
-  getHireByIdModel: (id, callback) => {
-    db.query(`SELECT * FROM hire  WHERE idHire = ${id}`, (_err, result, _field) => {
-      callback(result)
-    })
-  },
-  updateHireModel: (arr, id, callback) => {
-    db.query(`SELECT * FROM hire WHERE idHire = ${id}`, (_err, result, _field) => {
-      if (result.length) {
-        db.query(`UPDATE hire SET projectJob='${arr[0]}', message='${arr[1]}', statusConfirm='${arr[2]}', dateConfirm='${arr[3]}', price='${arr[4]}', idWorker='${arr[5]}', idProject='${arr[6]}'
-         WHERE idHire = ${id}`, (_err, result, _fields) => {
-          callback(result)
-        })
-      }
-    })
-  },
-  updatePatchHireModel: (data, id, callback) => {
-    var query = `UPDATE hire SET ${data} WHERE idHire = ${id}`
-    db.query(query, (_err, result, _field) => {
-      callback(result)
+  createHireModel: (setData) => {
+    return new Promise((resolve, reject) => {
+      const query = 'INSERT INTO hire SET ?'
+      db.query(query, setData, (err, result, _fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
 
-  deleteHireModel: (id, callback) => {
-    db.query(`DELETE FROM hire WHERE idHire = ${id}`, (_err, result, _field) => {
-      callback(result)
+  getHireModel: (searchKey, searchValue, limit, offset) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM hire WHERE ${searchKey} LIKE '%${searchValue}%' LIMIT ${limit} OFFSET ${offset}`, (err, result, _fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+
+  getHireByIdModel: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM hire  WHERE idHire = ?', id, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+
+  updateHireModel: (arr, id) => {
+    return new Promise((resolve, reject) => {
+      db.query(`UPDATE hire SET projectJob='${arr[0]}', message='${arr[1]}', statusConfirm='${arr[2]}', dateConfirm='${arr[3]}', price='${arr[4]}'
+      WHERE idHire = ${id} `, (err, result, _fields) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+
+  updatePatchHireModel: (data, id) => {
+    return new Promise((resolve, reject) => {
+      var query = `UPDATE hire SET ${data} WHERE idHire = ?`
+      db.query(query, id, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
+
+  deleteHireModel: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query('DELETE FROM hire WHERE idHire = ?', id, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   },
 
@@ -56,9 +90,15 @@ module.exports = {
     db.query(`UPDATE hire SET updatedAt='${updatedAt}' WHERE idHire = ${id}`)
   },
 
-  selectHireModel: (id, callback) => {
-    db.query(`SELECT * FROM hire WHERE idHire = ${id}`, (_err, result, _field) => {
-      callback(result)
+  selectHireModel: (id) => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM hire WHERE idHire = ?', id, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
     })
   }
 }

@@ -49,8 +49,8 @@ module.exports = {
   },
 
   loginAccount: async (req, res) => {
+    const { email, password } = req.body
     try {
-      const { email, password } = req.body
       const checkData = await loginAccountModel(email)
       if (checkData.length >= 1) {
         const checkPassword = bcrypt.compareSync(
@@ -58,7 +58,7 @@ module.exports = {
         if (checkPassword) {
           const { idAccount, name, email, status } = checkData[0]
           let payload = { idAccount, name, email, status }
-          const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '1h' })
+          const token = jwt.sign(payload, process.env.JWT_KEY_WORKER, { expiresIn: '1h' })
           payload = { ...payload, token }
           res.send({
             success: true,
@@ -86,8 +86,7 @@ module.exports = {
     }
   },
 
-  getAccount: (req, res) => {
-    console.log(req.query)
+  getAccount: async (req, res) => {
     let { page, limit, search } = req.query
     let searchKey = ''
     let searchValue = ''
@@ -112,9 +111,8 @@ module.exports = {
     }
 
     const offset = (page - 1) * limit
-
-    getAccountModel(searchKey, searchValue, limit, offset, result => {
-      console.log(searchKey, searchValue)
+    try {
+      const result = await getAccountModel(searchKey, searchValue, limit, offset)
       if (result.length) { // result itu berupa Array
         res.send({
           success: true,
@@ -127,11 +125,18 @@ module.exports = {
           messages: 'There is no worker on list'
         })
       }
-    })
+    } catch (err) {
+      res.send({
+        success: false,
+        message: 'Bad Request'
+      })
+    }
   },
-  getAccountById: (req, res) => {
+
+  getAccountById: async (req, res) => {
     const { id } = req.params
-    getAccountByIdModel(id, result => {
+    try {
+      const result = await getAccountByIdModel(id)
       if (result.length) {
         res.send({
           success: true,
@@ -144,16 +149,27 @@ module.exports = {
           message: `Data Account ${id} not found`
         })
       }
-    })
+    } catch (err) {
+      res.send({
+        success: false,
+        message: 'Bad Request'
+      })
+    }
   },
-  updateAccount: (req, res) => {
+
+  updateAccount: async (req, res) => {
     const id = req.params.id
-    const { name, email, password, noHp } = req.body
+    let { name, email, password, noHp } = req.body
+    const salt = bcrypt.genSaltSync(10)
+    const encryptPassword = bcrypt.hashSync(password, salt)
+    password = encryptPassword
     if (name.trim() && email.trim() && password.trim() && noHp.trim()) {
-      updateAccountModel([name, email, password, noHp], id, result => {
-        updatedAtDate(id)
-        console.log(result)
-        if (result.affectedRows) {
+      try {
+        const select = await selectAccountModel(id)
+        if (select.length) {
+          const result = await updateAccountModel([name, email, password, noHp], id)
+          console.log(result)
+          updatedAtDate(id)
           res.send({
             success: true,
             messages: `Account with id ${id} Has Been Updated`
@@ -161,79 +177,100 @@ module.exports = {
         } else {
           res.send({
             success: false,
-            messages: 'Field must be filled'
+            message: `Account id ${id} not found`
           })
         }
-      })
+      } catch (err) {
+        res.send({
+          success: false,
+          messages: 'Bad Request'
+        })
+      }
     } else {
       res.send({
         success: false,
-        messages: 'error!'
+        messages: 'Field must be filled'
       })
     }
   },
-  updatePatchAccount: (req, res) => {
+
+  updatePatchAccount: async (req, res) => {
     const id = req.params.id
     const { name = '', email = '', password = '', noHp = '' } = req.body
+    const salt = bcrypt.genSaltSync(10)
+    const encryptPassword = bcrypt.hashSync(password, salt)
     if (name.trim() || email.trim() || password.trim() || noHp.trim()) {
-      selectAccountModel(id, result => {
-        const data = Object.entries(req.body).map(item => {
-          return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
-        })
-        if (result.length) {
-          updatePatchAccountModel(data, id, result => {
-            updatedAtDate(id)
-            if (result.affectedRows) {
-              res.send({
-                success: true,
-                messages: `Account With id ${id} has been Updated`
-              })
-            } else {
-              res.send({
-                success: false,
-                messages: 'Failed to Update'
-              })
-            }
-          })
-        } else {
-          res.send({
-            success: false,
-            messages: 'Data Project Not Found'
-          })
-        }
+      const setData = {
+        ...req.body,
+        password: encryptPassword
+      }
+      const data = Object.entries(setData).map(item => {
+        return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
       })
-    } else {
-      res.send({
-        success: false,
-        message: 'ERROR!'
-      })
-    }
-  },
-
-  deleteAccount: (req, res) => {
-    const { id } = req.params
-
-    selectAccountModel(id, result => {
-      if (result.length) {
-        deleteAccountModel(id, result => {
+      try {
+        const select = await selectAccountModel(id)
+        if (select.length) {
+          const result = await updatePatchAccountModel(data, id)
+          updatedAtDate(id)
           if (result.affectedRows) {
             res.send({
               success: true,
-              message: `Account with id ${id} has been deleted`
+              messages: `Account With id ${id} has been Updated`
             })
           } else {
             res.send({
               success: false,
-              message: 'Failed to delete!'
+              messages: 'Failed to Update'
             })
           }
+        } else {
+          res.send({
+            success: false,
+            messages: 'Data Account Not Found'
+          })
+        }
+      } catch (err) {
+        res.send({
+          success: false,
+          message: 'Bad Request'
         })
+      }
+    } else {
+      res.send({
+        success: false,
+        message: 'Fields is empty'
+      })
+    }
+  },
+
+  deleteAccount: async (req, res) => {
+    const { id } = req.params
+    try {
+      const select = await selectAccountModel(id)
+      const result = await deleteAccountModel(id)
+      if (select.length) {
+        if (result.affectedRows) {
+          res.send({
+            success: true,
+            message: `Account with id ${id} has been deleted`
+          })
+        } else {
+          res.send({
+            success: false,
+            message: 'Failed to delete!'
+          })
+        }
       } else {
         res.send({
           success: false,
           message: 'Data Worker Not Found'
         })
       }
-    })
+    } catch (err) {
+      res.send({
+        success: false,
+        message: 'Bad Request'
+      })
+    }
   }
 }

@@ -1,19 +1,44 @@
-const { createWorkerModel, searchWorkerModel, getWorkerByIdModel, updateWorkerModel, updatePatchWorkerModel, deleteWorkerModel, selectWorkerModel, updatedAtDate } = require('../models/worker')
+const { createWorkerModel, checkIdAccountModel, searchWorkerModel, getWorkerByIdModel, updateWorkerModel, updatePatchWorkerModel, deleteWorkerModel, selectWorkerModel, updatedAtDate } = require('../models/worker')
 
 module.exports = {
 
-  createWorker: (req, res) => {
-    const idAccount = req.params.id
-    const { nameWorker, jobTitle, statusJob, city, workPlace, description, image } = req.body // harus sama yang diinputkan di postman
-    if (nameWorker && jobTitle && statusJob && city && workPlace && description && image) {
-      createWorkerModel([nameWorker, jobTitle, statusJob, city, workPlace, description, image], idAccount, result => {
-        console.log(result)
-        res.status(201).send({
-          success: true,
-          messages: 'Profile Has Been Created',
-          data: req.body
+  createWorker: async (req, res) => {
+    const { nameWorker, jobTitle, statusJob, city, workPlace, description, idAccount } = req.body
+    const image = req.file === undefined ? '' : req.file.filename
+    if (nameWorker && jobTitle && statusJob && city && workPlace && description && idAccount && image) {
+      const setData = {
+        nameWorker,
+        jobTitle,
+        statusJob,
+        city,
+        workPlace,
+        description,
+        idAccount,
+        image
+      }
+      try {
+        const checkId = await checkIdAccountModel(idAccount)
+        console.log(checkId.length)
+        if (checkId.length === 0) {
+          const create = await createWorkerModel(setData)
+          console.log(create)
+          res.send({
+            success: true,
+            message: 'Create Profile Success',
+            data: setData
+          })
+        } else {
+          res.send({
+            success: false,
+            message: 'Id already created'
+          })
+        }
+      } catch (err) {
+        res.send({
+          success: false,
+          message: 'Bad Request'
         })
-      })
+      }
     } else {
       res.status(500).send({
         success: false,
@@ -22,7 +47,7 @@ module.exports = {
     }
   },
 
-  getWorker: (req, res) => {
+  getWorker: async (req, res) => {
     console.log(req.query)
     let { order, sort, page, limit, search } = req.query
     let searchKey = ''
@@ -38,7 +63,7 @@ module.exports = {
     if (!limit) {
       limit = 9
     } else {
-      limit = parseInt(limit) // menghindari inputan yang bukan string
+      limit = parseInt(limit)
     }
 
     if (!page) {
@@ -49,24 +74,32 @@ module.exports = {
 
     const offset = (page - 1) * limit
 
-    searchWorkerModel(searchKey, searchValue, limit, offset, sort, order, result => {
-      if (result.length) { // result itu berupa Array
+    try {
+      const result = await searchWorkerModel(searchKey, searchValue, limit, offset, sort, order)
+      if (result.length) {
         res.send({
           success: true,
           messages: 'list worker',
-          data: result // result = hasil dari yang diambil dari parameter result
+          data: result
         })
       } else {
         res.send({
-          success: true,
+          success: false,
           messages: 'There is no worker on list'
         })
       }
-    })
+    } catch (err) {
+      res.send({
+        success: false,
+        messages: 'Bad Request!'
+      })
+    }
   },
-  getWorkerById: (req, res) => {
+
+  getWorkerById: async (req, res) => {
     const { id } = req.params
-    getWorkerByIdModel(id, result => {
+    try {
+      const result = await getWorkerByIdModel(id)
       if (result.length) {
         res.send({
           success: true,
@@ -79,96 +112,131 @@ module.exports = {
           message: `Data Account ${id} not found`
         })
       }
-    })
-  },
-  updateWorker: (req, res) => {
-    const id = req.params.id
-    const { nameWorker, jobTitle, statusJob, city, workPlace, description, image } = req.body
-    if (nameWorker.trim() && jobTitle.trim() && statusJob.trim() && city.trim() && workPlace.trim() && description.trim() && image.trim()) {
-      updateWorkerModel([nameWorker, jobTitle, statusJob, city, workPlace, description, image], id, result => {
-        updatedAtDate(id)
-        console.log(result)
-        if (result.affectedRows) {
-          res.send({
-            success: true,
-            messages: `Account with id ${id} Has Been Updated`
-          })
-        } else {
-          res.send({
-            success: false,
-            messages: 'Field must be filled'
-          })
-        }
-      })
-    } else {
+    } catch (err) {
       res.send({
         success: false,
-        messages: 'error!'
+        message: 'Bad Request'
       })
     }
   },
-  updatePatchWorker: (req, res) => {
+
+  updateWorker: async (req, res) => {
     const id = req.params.id
-    const { nameWorker = '', jobTitle = '', statusJob = '', city = '', workPlace = '', description = '', image = '' } = req.body
-    if (nameWorker.trim() || jobTitle.trim() || statusJob.trim() || city.trim() || city.trim() || workPlace.trim() || description.trim() || image.trim()) {
-      selectWorkerModel(id, result => {
-        const data = Object.entries(req.body).map(item => {
-          return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
-        })
-        if (result.length) {
-          updatePatchWorkerModel(data, id, result => {
-            updatedAtDate(id)
-            if (result.affectedRows) {
-              res.send({
-                success: true,
-                messages: `Account With id ${id} has been Updated`
-              })
-            } else {
-              res.send({
-                success: false,
-                messages: 'Failed to Update'
-              })
-            }
+    const { nameWorker, jobTitle, statusJob, city, workPlace, description } = req.body
+    const image = req.file === undefined ? '' : req.file.filename
+    if (nameWorker.trim() && jobTitle.trim() && statusJob.trim() && city.trim() && workPlace.trim() && description.trim() && image.trim()) {
+      try {
+        const select = await selectWorkerModel(id)
+        if (select.length) {
+          const result = await updateWorkerModel([nameWorker, jobTitle, statusJob, city, workPlace, description, image], id)
+          if (result.affectedRows) {
+            res.send({
+              success: true,
+              messages: `Account with id ${id} Has Been Updated`
+            })
+          } else {
+            res.send({
+              success: false,
+              messages: 'Failed to update account'
+            })
+          }
+        } else {
+          res.send({
+            success: false,
+            message: 'Id not found'
           })
+        }
+      } catch (err) {
+        res.send({
+          success: false,
+          messages: 'Bad Request'
+        })
+      }
+    } else {
+      res.send({
+        success: false,
+        messages: 'Field must be filled'
+      })
+    }
+  },
+
+  updatePatchWorker: async (req, res) => {
+    const id = req.params.id
+    const { nameWorker = '', jobTitle = '', statusJob = '', city = '', workPlace = '', description = '' } = req.body
+    const image = req.file === undefined ? '' : req.file.filename
+    if (nameWorker.trim() || jobTitle.trim() || statusJob.trim() || city.trim() || city.trim() || workPlace.trim() || description.trim() || image.trim()) {
+      const setData = {
+        ...req.body,
+        image
+      }
+      const data = Object.entries(setData).map(item => {
+        return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
+      })
+
+      try {
+        const select = await selectWorkerModel(id)
+        if (select.length) {
+          const result = await updatePatchWorkerModel(data, id)
+          if (result.affectedRows) {
+            updatedAtDate(id)
+            res.send({
+              success: true,
+              messages: `Account With id ${id} has been Updated`
+            })
+          } else {
+            res.send({
+              success: false,
+              messages: 'Failed to Update'
+            })
+          }
         } else {
           res.send({
             success: false,
             messages: 'Data worker Not Found'
           })
         }
-      })
+      } catch (err) {
+        res.send({
+          success: false,
+          message: 'Bad Request!'
+        })
+      }
     } else {
       res.send({
         success: false,
-        message: 'ERROR!'
+        message: 'Field must be filled!'
       })
     }
   },
 
-  deleteWorker: (req, res) => {
+  deleteWorker: async (req, res) => {
     const { id } = req.params
-
-    selectWorkerModel(id, result => {
-      if (result.length) {
-        deleteWorkerModel(id, result => {
-          if (result.affectedRows) {
-            res.send({
-              success: true,
-              message: `Account with id ${id} has been deleted`
-            })
-          } else {
-            res.send({
-              success: false,
-              message: 'Failed to delete!'
-            })
-          }
-        })
+    try {
+      const select = await selectWorkerModel(id)
+      const result = await deleteWorkerModel(id)
+      if (select.length) {
+        if (result.affectedRows) {
+          res.send({
+            success: true,
+            message: `Account with id ${id} has been deleted`
+          })
+        } else {
+          res.send({
+            success: false,
+            message: 'Failed to delete!'
+          })
+        }
       } else {
         res.send({
           success: false,
           message: 'Data worker Not Found'
         })
       }
-    })
+    } catch (err) {
+      res.send({
+        success: false,
+        message: 'Bad Request!'
+      })
+    }
   }
 }

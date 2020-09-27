@@ -2,12 +2,13 @@ const { Router } = require('express')
 
 const router = Router()
 const { getDataExperience, getDataExperienceById, createExperience, updateExperience, updatePatchExperience, deleteExperience } = require('../controllers/experience')
+const { authWorker, authRecruiter } = require('../middleware/auth')
 
-router.post('/', createExperience)
-router.get('/', getDataExperience)
-router.get('/:id', getDataExperienceById)
-router.put('/:id', updateExperience)
-router.patch('/:id', updatePatchExperience)
-router.delete('/:id', deleteExperience)
+router.post('/', authWorker, createExperience)
+router.get('/', authWorker, authRecruiter, getDataExperience)
+router.get('/:id', authWorker, authRecruiter, getDataExperienceById)
+router.put('/:id', authWorker, updateExperience)
+router.patch('/:id', authWorker, updatePatchExperience)
+router.delete('/:id', authWorker, deleteExperience)
 
 module.exports = router

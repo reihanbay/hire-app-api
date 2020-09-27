@@ -2,17 +2,25 @@ const { createHireModel, getHireModel, getHireByIdModel, updateHireModel, update
 
 module.exports = {
 
-  createHire: (req, res) => {
+  createHire: async (req, res) => {
     const { projectJob, message, statusConfirm, dateConfirm, price, idWorker, idProject } = req.body // harus sama yang diinputkan di postman
     if (projectJob && message && statusConfirm && dateConfirm && price && idWorker && idProject) {
-      createHireModel([projectJob, message, statusConfirm, dateConfirm, price, idWorker, idProject], result => {
-        console.log(result)
+      const setData = {
+        projectJob, message, statusConfirm, dateConfirm, price, idWorker, idProject
+      }
+      try {
+        await createHireModel(setData)
         res.status(201).send({
           success: true,
           messages: 'Hire Has Been Created',
           data: req.body
         })
-      })
+      } catch (err) {
+        res.send({
+          success: true,
+          messages: 'Bad Request!'
+        })
+      }
     } else {
       res.status(500).send({
         success: false,
@@ -21,7 +29,7 @@ module.exports = {
     }
   },
 
-  getDataHire: (req, res) => {
+  getDataHire: async (req, res) => {
     let { page, limit, search } = req.query
     let searchKey = ''
     let searchValue = ''
@@ -47,8 +55,8 @@ module.exports = {
 
     const offset = (page - 1) * limit
 
-    getHireModel(searchKey, searchValue, limit, offset, result => {
-      console.log(result)
+    try {
+      const result = await getHireModel(searchKey, searchValue, limit, offset)
       if (result.length) { // result itu berupa Array
         res.send({
           success: true,
@@ -57,15 +65,21 @@ module.exports = {
         })
       } else {
         res.send({
-          success: true,
+          success: false,
           messages: 'There is no hire on list'
         })
       }
-    })
+    } catch (err) {
+      res.send({
+        success: false,
+        messages: 'Bad Request!'
+      })
+    }
   },
-  getDataHireById: (req, res) => {
+  getDataHireById: async (req, res) => {
     const { id } = req.params
-    getHireByIdModel(id, result => {
+    try {
+      const result = await getHireByIdModel(id)
       if (result.length) {
         res.send({
           success: true,
@@ -78,96 +92,125 @@ module.exports = {
           message: `Data Hire ${id} not found`
         })
       }
-    })
-  },
-  updateHire: (req, res) => {
-    const id = req.params.id
-    const { projectJob, message, statusConfirm, dateConfirm, price, idWorker, idProject } = req.body
-    if (projectJob.trim() && message.trim() && statusConfirm.trim() && dateConfirm.trim() && price.trim() && idWorker.trim() && idProject.trim()) {
-      updateHireModel([projectJob, message, statusConfirm, dateConfirm, price, idWorker, idProject], id, result => {
-        updatedAtDate(id)
-        console.log(result)
-        if (result.affectedRows) {
-          res.send({
-            success: true,
-            messages: `Hire with id ${id} Has Been Updated`
-          })
-        } else {
-          res.send({
-            success: false,
-            messages: 'Field must be filled'
-          })
-        }
-      })
-    } else {
+    } catch (err) {
       res.send({
         success: false,
-        messages: 'error!'
+        message: 'Bad Request'
       })
     }
   },
-  updatePatchHire: (req, res) => {
+  updateHire: async (req, res) => {
     const id = req.params.id
-    const { projectJob = '', message = '', statusConfirm = '', dateConfirm = '', price = '', idWorker = '', idProject = '' } = req.body
-    if (projectJob.trim() || message.trim() || statusConfirm.trim() || dateConfirm.trim() || price.trim() || idWorker.trim() || idProject.trim()) {
-      selectHireModel(id, result => {
-        const data = Object.entries(req.body).map(item => {
-          return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
-        })
-        if (result.length) {
-          updatePatchHireModel(data, id, result => {
-            updatedAtDate(id)
-            if (result.affectedRows) {
-              res.send({
-                success: true,
-                messages: `Hire With id ${id} has been Updated`
-              })
-            } else {
-              res.send({
-                success: false,
-                messages: 'Failed to Update'
-              })
-            }
-          })
-        } else {
-          res.send({
-            success: false,
-            messages: 'Data Hire Not Found'
-          })
-        }
-      })
-    } else {
-      res.send({
-        success: false,
-        message: 'ERROR!'
-      })
-    }
-  },
-
-  deleteHire: (req, res) => {
-    const { id } = req.params
-
-    selectHireModel(id, result => {
-      if (result.length) {
-        deleteHireModel(id, result => {
+    const { projectJob, message, statusConfirm, dateConfirm, price } = req.body
+    if (projectJob.trim() && message.trim() && statusConfirm.trim() && dateConfirm.trim() && price.trim()) {
+      try {
+        const select = await selectHireModel(id)
+        if (select.length) {
+          const result = await updateHireModel([projectJob, message, statusConfirm, dateConfirm, price], id)
+          console.log(result)
           if (result.affectedRows) {
+            updatedAtDate(id)
             res.send({
               success: true,
-              message: `Hire with id ${id} has been deleted`
+              message: `Hire with id ${id} Has Been Updated`
             })
           } else {
             res.send({
               success: false,
-              message: 'Failed to delete!'
+              messages: 'Update Hire Failed'
             })
           }
+        } else {
+          res.send({
+            success: false,
+            messages: 'The Hire not found'
+          })
+        }
+      } catch (err) {
+        console.log(err)
+        res.send({
+          success: false,
+          message: 'Bad Request!'
         })
+      }
+    } else {
+      res.send({
+        success: false,
+        messages: 'Field must be filled'
+      })
+    }
+  },
+  updatePatchHire: async (req, res) => {
+    const id = req.params.id
+    const { projectJob = '', message = '', statusConfirm = '', dateConfirm = '', price = '' } = req.body
+    if (projectJob.trim() || message.trim() || statusConfirm.trim() || dateConfirm.trim() || price.trim()) {
+      const data = Object.entries(req.body).map(item => {
+        return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
+      })
+      try {
+        const select = await selectHireModel(id)
+        if (select.length) {
+          const result = await updatePatchHireModel(data, id)
+          if (result.affectedRows) {
+            updatedAtDate(id)
+            res.send({
+              success: true,
+              messages: `Hire With id ${id} has been Updated`
+            })
+          } else {
+            res.send({
+              success: false,
+              messages: 'Failed to Update'
+            })
+          }
+        } else {
+          res.send({
+            success: false,
+            messages: 'The Hire not found'
+          })
+        }
+      } catch (err) {
+        res.send({
+          success: false,
+          message: 'Bad Request!'
+        })
+      }
+    } else {
+      res.send({
+        success: false,
+        message: 'Field must be filled'
+      })
+    }
+  },
+
+  deleteHire: async (req, res) => {
+    const { id } = req.params
+    try {
+      const select = await selectHireModel(id)
+      if (select.length) {
+        const result = await deleteHireModel(id)
+        if (result.affectedRows) {
+          res.send({
+            success: true,
+            message: `Hire with id ${id} has been deleted`
+          })
+        } else {
+          res.send({
+            success: false,
+            message: 'Failed to delete!'
+          })
+        }
       } else {
         res.send({
           success: false,
           message: 'Data Project Not Found'
         })
       }
-    })
+    } catch (err) {
+      res.send({
+        success: false,
+        message: 'Bad Request!'
+      })
+    }
   }
 }

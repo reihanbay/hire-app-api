@@ -1,22 +1,30 @@
-const { createExperienceModel, getExperienceModel, getExperienceByIdModel, updateExperienceModel, updatePatchExperienceModel, deleteExperienceModel, selectExperienceModel } = require('../models/experience')
+const { createPortfolioModel, getPortfolioModel, getPortfolioByIdModel, updatePortfolioModel, updatePatchPortfolioModel, deletePortfolioModel, selectPortfolioModel } = require('../models/portfolio')
 
 module.exports = {
 
-  createExperience: async (req, res) => {
-    const { companyName, description, workPosition, start, end, idWorker } = req.body
-    if (companyName && description && workPosition && start && end && idWorker) {
-      const setData = { companyName, description, workPosition, start, end, idWorker }
+  createPortfolio: async (req, res) => {
+    const { namePortfolio, linkRepository, typePortfolio, idWorker } = req.body
+    console.log(req.body)
+    if (namePortfolio && linkRepository && typePortfolio && idWorker) {
+      const setData = {
+        namePortfolio,
+        linkRepository,
+        typePortfolio,
+        idWorker,
+        image: req.file === undefined ? '' : req.file.filename
+      }
+      console.log(setData)
       try {
-        await createExperienceModel(setData)
+        await createPortfolioModel(setData)
         res.status(201).send({
           success: true,
-          messages: 'Experience Has Been Created',
-          data: setData
+          message: 'Portfolio Has Been Created',
+          data: req.body
         })
       } catch (err) {
         res.send({
           success: false,
-          message: 'Bad Request!'
+          message: 'Bad Request'
         })
       }
     } else {
@@ -26,8 +34,7 @@ module.exports = {
       })
     }
   },
-
-  getDataExperience: async (req, res) => {
+  getDataPortfolio: async (req, res) => {
     let { page, limit, search } = req.query
     let searchKey = ''
     let searchValue = ''
@@ -35,7 +42,7 @@ module.exports = {
       searchKey = Object.keys(search)[0]
       searchValue = Object.values(search)[0]
     } else {
-      searchKey = 'idExperience'
+      searchKey = 'idPortfolio'
       searchValue = search || ''
     }
 
@@ -53,17 +60,17 @@ module.exports = {
 
     const offset = (page - 1) * limit
     try {
-      const result = await getExperienceModel(searchKey, searchValue, limit, offset)
+      const result = await getPortfolioModel(searchKey, searchValue, limit, offset)
       if (result.length) { // result itu berupa Array
         res.send({
           success: true,
-          messages: 'list Experience',
+          messages: 'list Portfolio',
           data: result // result = hasil dari yang diambil dari parameter result
         })
       } else {
         res.send({
           success: true,
-          messages: 'There is no Experience on list'
+          messages: 'There is no Portfolio on list'
         })
       }
     } catch (err) {
@@ -73,83 +80,91 @@ module.exports = {
       })
     }
   },
-  getDataExperienceById: async (req, res) => {
+  getDataPortfolioById: async (req, res) => {
     const { id } = req.params
     try {
-      const result = await getExperienceByIdModel(id)
+      const result = await getPortfolioByIdModel(id)
       if (result.length) {
         res.send({
           success: true,
-          message: `Data Experience ${id}`,
+          message: `Data Portfolio ${id}`,
           data: result[0]
         })
       } else {
         res.send({
           success: false,
-          message: `Data Experience ${id} not found`
+          message: `Data Portfolio ${id} not found`
         })
       }
     } catch (err) {
       res.send({
         success: false,
-        message: 'Bad Request!'
+        message: 'Bad Request'
       })
     }
   },
-  updateExperience: async (req, res) => {
+  updatePortfolio: async (req, res) => {
     const id = req.params.id
-    const { companyName, description, workPosition, start, end, idWorker } = req.body
-    if (companyName.trim() && description.trim() && workPosition.trim() && start.trim() && end.trim() && idWorker.trim()) {
+    const { namePortfolio, linkRepository, typePortfolio, idWorker } = req.body
+    const image = req.file === undefined ? '' : req.file.filename
+    if (namePortfolio.trim() && linkRepository.trim() && typePortfolio.trim() && image.trim() && idWorker.trim()) {
       try {
-        const select = await selectExperienceModel(id)
+        const select = await selectPortfolioModel(id)
         if (select.length) {
-          const result = await updateExperienceModel([companyName, description, workPosition, start, end, idWorker], id)
+          const result = await updatePortfolioModel([namePortfolio, linkRepository, typePortfolio, image, idWorker], id)
           if (result.affectedRows) {
             res.send({
               success: true,
-              messages: `Experience with id ${id} Has Been Updated`
+              messages: `Portfolio with id ${id} Has Been Updated`
             })
           } else {
             res.send({
               success: false,
-              messages: 'Field must be filled'
+              messages: 'Update portfolio failed'
             })
           }
         } else {
           res.send({
             success: false,
-            message: `Experience with id ${id} not found`
+            message: `Portfolio with id ${id} not found`
           })
         }
       } catch (err) {
         res.send({
           success: false,
-          message: 'Bad Request!'
+          messages: 'Bad request'
         })
       }
     } else {
       res.send({
         success: false,
-        message: 'Field must be filled'
+        messages: 'Field must be filled'
       })
     }
   },
-  updatePatchExperience: async (req, res) => {
+  updatePatchPortfolio: async (req, res) => {
     const id = req.params.id
-    const { companyName = '', description = '', workPosition = '', start = '', end = '', idWorker = '' } = req.body
-    if (companyName.trim() || description.trim() || workPosition.trim() || start.trim() || end.trim() || idWorker.trim()) {
-      const setData = { companyName, description, workPosition, start, end, idWorker }
+    const { namePortfolio = '', linkRepository = '', typePortfolio = '', image = '', idWorker = '' } = req.body
+    if (namePortfolio.trim() || linkRepository.trim() || typePortfolio.trim() || image.trim() || idWorker.trim()) {
+      const setData = {
+        namePortfolio,
+        linkRepository,
+        typePortfolio,
+        image: req.file === undefined ? '' : req.file.filename,
+        idWorker
+      }
       const data = Object.entries(setData).map(item => {
         return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
       })
+
       try {
-        const select = await selectExperienceModel(id)
+        const select = await selectPortfolioModel(id)
         if (select.length) {
-          const result = await updatePatchExperienceModel(data, id)
+          const result = await updatePatchPortfolioModel(data, id)
           if (result.affectedRows) {
             res.send({
               success: true,
-              messages: `Experience With id ${id} has been Updated`
+              message: `Portfolio With id ${id} has been Updated`
             })
           } else {
             res.send({
@@ -160,7 +175,7 @@ module.exports = {
         } else {
           res.send({
             success: false,
-            message: 'Experience Not Found'
+            message: `Portfolio with id ${id} not found`
           })
         }
       } catch (err) {
@@ -176,28 +191,27 @@ module.exports = {
       })
     }
   },
-
-  deleteExperience: async (req, res) => {
+  deletePortfolio: async (req, res) => {
     const { id } = req.params
     try {
-      const select = await selectExperienceModel(id)
+      const select = await selectPortfolioModel(id)
       if (select.length) {
-        const result = await deleteExperienceModel(id)
+        const result = await deletePortfolioModel(id)
         if (result.affectedRows) {
           res.send({
             success: true,
-            message: `Experience with id ${id} has been deleted`
+            message: `Portfolio with id ${id} has been deleted`
           })
         } else {
           res.send({
             success: false,
-            message: 'Failed to delete!'
+            message: 'Failed delete portfolio'
           })
         }
       } else {
         res.send({
           success: false,
-          message: 'Experience Not Found'
+          message: `Portofolio with id ${id} not found`
         })
       }
     } catch (err) {

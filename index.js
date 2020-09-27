@@ -12,7 +12,7 @@ const recruiterRouter = require('./src/routes/recruiter')
 const projectRouter = require('./src/routes/projects')
 const hireRouter = require('./src/routes/hire')
 const experienceRouter = require('./src/routes/experience')
-const portofolioRouter = require('./src/routes/portofolio')
+const portofolioRouter = require('./src/routes/portfolio')
 const skillRouter = require('./src/routes/skill')
 
 app.use('/hire', hireRouter)
@@ -27,6 +27,7 @@ app.use('/recruiter', recruiterRouter)
 app.use(cors())
 
 app.use((request, response, next) => {
+  console.log('cors activated')
   response.header('Access-Control-Allow-Origin', '*')
   response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
   next()
