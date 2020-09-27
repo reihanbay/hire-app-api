@@ -20,7 +20,7 @@ module.exports = {
       }
       try {
         const checkId = await checkIdAccountModel(idAccount)
-        console.log(checkId);
+        console.log(checkId)
         if (checkId.length === 0) {
           await createRecruiterModel(setData)
           res.send({
@@ -35,7 +35,7 @@ module.exports = {
           })
         }
       } catch (err) {
-        console.log(err);
+        console.log(err)
         res.send({
           success: false,
           messages: 'Bad Request!'
