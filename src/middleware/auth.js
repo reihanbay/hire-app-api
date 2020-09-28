@@ -6,7 +6,7 @@ module.exports = {
     let token = req.headers.authorization
     if (token) {
       token = token.split(' ')[1]
-      jwt.verify(token, process.env.JWT_KEY_WORKER, (err, result) => {
+      jwt.verify(token, process.env.JWT_KEY, (err, result) => {
         if ((err && err.name === 'JsonWebTokenError') || (err && err.name === 'TokenExpiredError')) {
           res.send({
             success: false,
@@ -28,7 +28,7 @@ module.exports = {
     let token = req.headers.authorization
     if (token) {
       token = token.split(' ')[1]
-      jwt.verify(token, process.env.JWT_KEY_RECRUITER, (err, result) => {
+      jwt.verify(token, process.env.JWT_KEY, (err, result) => {
         if ((err && err.name === 'JsonWebTokenError') || (err && err.name === 'TokenExpiredError')) {
           res.send({
             success: false,

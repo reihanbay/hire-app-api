@@ -22,6 +22,7 @@ module.exports = {
           data: setData
         })
       } catch (err) {
+        console.log(err)
         res.send({
           success: false,
           message: 'Bad Request'
@@ -48,7 +49,7 @@ module.exports = {
     }
 
     if (!limit) {
-      limit = 9
+      limit = 3
     } else {
       limit = parseInt(limit) // menghindari inputan yang bukan string
     }

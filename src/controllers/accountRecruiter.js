@@ -57,7 +57,7 @@ module.exports = {
         if (checkPassword) {
           const { idAccount, name, email, status } = checkData[0]
           let payload = { idAccount, name, email, status }
-          const token = jwt.sign(payload, process.env.JWT_KEY_RECRUITER, { expiresIn: '1h' })
+          const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '1h' })
           payload = { ...payload, token }
           res.send({
             success: true,
@@ -99,7 +99,7 @@ module.exports = {
     }
 
     if (!limit) {
-      limit = 9
+      limit = 3
     } else {
       limit = parseInt(limit) // menghindari inputan yang bukan string
     }

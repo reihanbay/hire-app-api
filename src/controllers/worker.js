@@ -61,7 +61,7 @@ module.exports = {
     }
 
     if (!limit) {
-      limit = 9
+      limit = 3
     } else {
       limit = parseInt(limit)
     }

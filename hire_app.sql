@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 27 Sep 2020 pada 20.11
+-- Waktu pembuatan: 28 Sep 2020 pada 07.29
 -- Versi server: 10.4.14-MariaDB
 -- Versi PHP: 7.4.10
 
@@ -45,7 +45,7 @@ CREATE TABLE `account_recruiter` (
 --
 
 INSERT INTO `account_recruiter` (`idAccount`, `name`, `email`, `password`, `noHp`, `companyName`, `position`, `status`, `createdAt`, `updatedAt`) VALUES
-(1, 'Reihan', 'akudi@gmail.com', '$2a$10$wYW5u.XE/CS3kMa42MruQeUqp49bT3ldR9y7bAb3Id4iY7yJvI8iO', 88888881, 'Bukapalak', 'HRD', 0, '2020-09-27 22:40:11.029635', '2020-09-27 22:40:11.029635');
+(1, 'Reihan', 'akudi@yahoo.com', '$2a$10$ebxIvsR.P42Ha0mjCa1Q4eRkfhiev3t0G3IfujV4wHHyWZw8tlENm', 88888881, 'Bukapalak', 'HRD', 0, '2020-09-28 12:15:52.163127', '2020-09-28 12:15:52.163127');
 
 -- --------------------------------------------------------
 
@@ -69,7 +69,7 @@ CREATE TABLE `account_worker` (
 --
 
 INSERT INTO `account_worker` (`idAccount`, `name`, `email`, `password`, `noHp`, `status`, `createdAt`, `updatedAt`) VALUES
-(1, 'Ubayzaky', 'aku@ditest.indong', '$2a$10$8ZkGK0158AWAHjcMMRS11O7V8NIBv7gyxxEXB8ODR60lM9Vb7bKsK', 818, 0, '2020-09-27 21:22:05.429570', '2020-09-27 21:51:38.930000');
+(1, 'Irfan', 'irfan@gmaile.com', '$2a$10$altAtFCAMPIBeKRPMP.Tqu2aNF7Yu9mdXf1Js6yHgnu6V5YSyqAGy', 2147483647, 0, '2020-09-28 12:20:21.958261', '2020-09-28 12:20:21.958261');
 
 -- --------------------------------------------------------
 
@@ -92,7 +92,7 @@ CREATE TABLE `experience` (
 --
 
 INSERT INTO `experience` (`idExperience`, `companyName`, `description`, `workPosition`, `start`, `end`, `idWorker`) VALUES
-(1, 'Bukapalak', 'jadi satpam siang dan malam bersama paijo', 'jadi satpam', '0000-00-00', '0000-00-00', 1);
+(1, 'Bukapalak', 'jadi satpam', 'jadi satpam', '2010-12-20', '2020-12-20', 1);
 
 -- --------------------------------------------------------
 
@@ -118,7 +118,7 @@ CREATE TABLE `hire` (
 --
 
 INSERT INTO `hire` (`idHire`, `projectJob`, `message`, `statusConfirm`, `dateConfirm`, `price`, `idWorker`, `idProject`, `createdAt`, `updatedAt`) VALUES
-(1, 'Make API Android Hiring App', 'gelem ra?', 0, '2020-12-20', 25000000, 1, 1, '2020-09-27 23:13:15.304859', '2020-09-27 23:13:47.270000');
+(3, 'Make API Android', 'gelem ra?', 0, '2020-12-20', 22000000, 1, 1, '2020-09-28 12:28:19.926186', '2020-09-28 12:28:19.926186');
 
 -- --------------------------------------------------------
 
@@ -140,7 +140,7 @@ CREATE TABLE `portfolio` (
 --
 
 INSERT INTO `portfolio` (`idPortfolio`, `namePortfolio`, `linkRepository`, `typePortfolio`, `image`, `idWorker`) VALUES
-(1, 'Mobile Apps', 'neng Github', 'mobile', 'image-1601219694519-srikandi.png', 1);
+(1, 'Mobile Apps Calculator', 'neng Github', 'mobile', 'image-1601270505829-gajah mada.png', 1);
 
 -- --------------------------------------------------------
 
@@ -165,7 +165,7 @@ CREATE TABLE `projects` (
 --
 
 INSERT INTO `projects` (`idProject`, `image`, `nameProject`, `description`, `deadline`, `idRecruiter`, `idWorker`, `createdAt`, `updatedAt`) VALUES
-(1, 'image-1601223059560-gajah mada.png', 'Sistem Absensi Kantor Bukapalak', 'Membuat sistem untuk absensi', '2020-12-22', 1, 1, '2020-09-27 23:10:06.272608', '2020-09-27 23:10:48.340000');
+(1, 'image-1601270882400-gajah mada.png', 'Sistem Absensi Kantor Bukapalak', 'Membuat sistem untuk absensi', '2020-12-22', 1, 1, '2020-09-28 12:28:02.471438', '2020-09-28 12:28:02.471438');
 
 -- --------------------------------------------------------
 
@@ -193,7 +193,7 @@ CREATE TABLE `recruiter` (
 --
 
 INSERT INTO `recruiter` (`idRecruiter`, `nameRecruiter`, `sectorCompany`, `city`, `description`, `image`, `instagram`, `linkedin`, `website`, `idAccount`, `createdAt`, `updatedAt`) VALUES
-(1, 'Reihan', 'Financial', 'Purwokerto', 'Lorem Ipsum Color si jamet', 'image-1601222960061-gajah mada.png', '@hai_ean', 'reihan bayzaky', 'bukapalak.com', 1, '2020-09-27 23:09:20.119901', '2020-09-27 23:09:20.119901');
+(1, 'Reihan', 'Financial', 'Purwokerto', 'Lorem Ipsum Color si jamet', 'image-1601270269857-gajah mada.png', '@hai_ean', 'reihan bayzaky', 'bukapalak.com', 1, '2020-09-28 12:17:49.929271', '2020-09-28 12:17:49.929271');
 
 -- --------------------------------------------------------
 
@@ -212,7 +212,14 @@ CREATE TABLE `skill` (
 --
 
 INSERT INTO `skill` (`idSkill`, `idWorker`, `skill`) VALUES
-(1, 1, 'mewarnai');
+(1, 1, 'mewarnai'),
+(2, 1, 'mewarnai'),
+(3, 1, 'mewarnai'),
+(4, 1, 'mewarnai'),
+(5, 1, 'mewarnai'),
+(6, 1, 'mewarnai'),
+(7, 1, 'mewarnai'),
+(8, 1, 'mewarnai');
 
 -- --------------------------------------------------------
 
@@ -239,7 +246,7 @@ CREATE TABLE `worker` (
 --
 
 INSERT INTO `worker` (`idWorker`, `nameWorker`, `jobTitle`, `statusJob`, `city`, `workPlace`, `description`, `image`, `idAccount`, `createdAt`, `updatedAt`) VALUES
-(1, 'Ubay', 'Android Developer', 'freelance', 'Purwokerto', 'HRD', 'Lorem dimsum color si jamet', 'image-1601219414141-gajah mada.png', 1, '2020-09-27 22:00:40.511205', '2020-09-27 22:10:14.590000');
+(1, 'Hakim', 'Android Dev', 'freelance', 'Purwokerto, Jawa Tengah, Indonesia', 'RuangGuru', 'Lorem ipsum color si jamet', 'image-1601270481451-srikandi.png', 1, '2020-09-28 12:21:21.508300', '2020-09-28 12:21:21.508300');
 
 --
 -- Indexes for dumped tables
@@ -322,7 +329,7 @@ ALTER TABLE `account_recruiter`
 -- AUTO_INCREMENT untuk tabel `account_worker`
 --
 ALTER TABLE `account_worker`
-  MODIFY `idAccount` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idAccount` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `experience`
@@ -334,7 +341,7 @@ ALTER TABLE `experience`
 -- AUTO_INCREMENT untuk tabel `hire`
 --
 ALTER TABLE `hire`
-  MODIFY `idHire` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idHire` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `portfolio`
@@ -346,7 +353,7 @@ ALTER TABLE `portfolio`
 -- AUTO_INCREMENT untuk tabel `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `idProject` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idProject` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `recruiter`
@@ -358,13 +365,13 @@ ALTER TABLE `recruiter`
 -- AUTO_INCREMENT untuk tabel `skill`
 --
 ALTER TABLE `skill`
-  MODIFY `idSkill` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idSkill` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT untuk tabel `worker`
 --
 ALTER TABLE `worker`
-  MODIFY `idWorker` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idWorker` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
