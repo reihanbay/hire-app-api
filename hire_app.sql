@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 01 Okt 2020 pada 19.19
+-- Waktu pembuatan: 01 Okt 2020 pada 19.59
 -- Versi server: 10.4.14-MariaDB
 -- Versi PHP: 7.4.10
 
@@ -135,7 +135,7 @@ CREATE TABLE `user` (
   `name` varchar(200) NOT NULL,
   `email` text NOT NULL,
   `password` text NOT NULL,
-  `noHp` int(20) NOT NULL,
+  `noHp` int(100) NOT NULL,
   `role` enum('admin','recruiter','worker') NOT NULL,
   `status` tinyint(1) NOT NULL,
   `createdAt` datetime(6) NOT NULL DEFAULT current_timestamp(6),
