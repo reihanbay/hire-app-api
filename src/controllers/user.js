@@ -1,12 +1,13 @@
-const { loginAccountModel, getAccountModel, getAccountByIdModel, updateAccountModel, updatePatchAccountModel, deleteAccountModel, selectAccountModel, updatedAtDate, checkEmailModel, registerAccountModel } = require('../models/accountRecruiter')
+const { getAccountModel, checkEmailModel, getAccountByIdModel, updateAccountModel, updatePatchAccountModel, deleteAccountModel, selectAccountModel, updatedAtDate, postAccount, loginAccountModel } = require('../models/user')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
 module.exports = {
+
   registerAccount: async (req, res) => {
-    const { name, email, password, noHp, companyName, position } = req.body
-    if (name && email && password && noHp && companyName && position) {
+    const { name, email, password, noHp, role } = req.body
+    if (name && email && password && noHp && role) {
       const salt = bcrypt.genSaltSync(10)
       const encryptPassword = bcrypt.hashSync(password, salt)
       const setData = {
@@ -14,8 +15,7 @@ module.exports = {
         email,
         password: encryptPassword,
         noHp,
-        companyName,
-        position,
+        role,
         status: 0
       }
       try {
@@ -26,7 +26,8 @@ module.exports = {
             message: 'Email Already Registered'
           })
         } else {
-          const result = await registerAccountModel(setData)
+          const result = await postAccount(setData)
+          console.log(result)
           res.send({
             success: true,
             message: 'Register Account Success!',
@@ -34,6 +35,7 @@ module.exports = {
           })
         }
       } catch (err) {
+        console.log(err)
         res.send({
           success: false,
           message: 'Bad Request'
@@ -42,7 +44,7 @@ module.exports = {
     } else {
       res.send({
         success: false,
-        message: 'Field must be filled'
+        message: 'Field must be filled!'
       })
     }
   },
@@ -55,10 +57,11 @@ module.exports = {
         const checkPassword = bcrypt.compareSync(
           password, checkData[0].password)
         if (checkPassword) {
-          const { idAccount, name, email, status } = checkData[0]
-          let payload = { idAccount, name, email, status }
+          const { idAccount, name, email, status, role } = checkData[0]
+          let payload = { idAccount, name, email, status, role }
           const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '1h' })
           payload = { ...payload, token }
+          console.log(payload)
           res.send({
             success: true,
             message: 'Success Login',
@@ -86,7 +89,6 @@ module.exports = {
   },
 
   getAccount: async (req, res) => {
-    console.log(req.query)
     let { page, limit, search } = req.query
     let searchKey = ''
     let searchValue = ''
@@ -113,25 +115,26 @@ module.exports = {
     const offset = (page - 1) * limit
     try {
       const result = await getAccountModel(searchKey, searchValue, limit, offset)
-      if (result.length) { // result itu berupa Array
+      if (result.length) {
         res.send({
           success: true,
-          messages: 'list Project',
+          messages: 'list Worker',
           data: result // result = hasil dari yang diambil dari parameter result
         })
       } else {
         res.send({
           success: true,
-          messages: 'There is no item on list'
+          messages: 'There is no worker on list'
         })
       }
     } catch (err) {
       res.send({
-        success: true,
-        messages: 'Bad Request!'
+        success: false,
+        message: 'Bad Request'
       })
     }
   },
+
   getAccountById: async (req, res) => {
     const { id } = req.params
     try {
@@ -139,13 +142,13 @@ module.exports = {
       if (result.length) {
         res.send({
           success: true,
-          message: `Data project ${id}`,
+          message: `Data Account ${id}`,
           data: result[0]
         })
       } else {
         res.send({
           success: false,
-          message: `Data Project ${id} not found`
+          message: `Data Account ${id} not found`
         })
       }
     } catch (err) {
@@ -158,37 +161,31 @@ module.exports = {
 
   updateAccount: async (req, res) => {
     const id = req.params.id
-    let { name, email, password, noHp, companyName, position } = req.body
+    let { name, email, password, noHp } = req.body
     const salt = bcrypt.genSaltSync(10)
     const encryptPassword = bcrypt.hashSync(password, salt)
     password = encryptPassword
-    if (name.trim() && email.trim() && password.trim() && noHp.trim() && companyName.trim() && position.trim()) {
+    if (name.trim() && email.trim() && password.trim() && noHp.trim()) {
       try {
         const select = await selectAccountModel(id)
         if (select.length) {
-          const result = await updateAccountModel([name, email, password, noHp, companyName, position], id)
-          if (result.affectedRows) {
-            updatedAtDate(id)
-            res.send({
-              success: true,
-              messages: `Account with id ${id} Has Been Updated`
-            })
-          } else {
-            res.send({
-              success: false,
-              messages: 'Update Account Failed'
-            })
-          }
+          const result = await updateAccountModel([name, email, password, noHp], id)
+          console.log(result)
+          updatedAtDate(id)
+          res.send({
+            success: true,
+            messages: `Account with id ${id} Has Been Updated`
+          })
         } else {
           res.send({
             success: false,
-            messages: `Account with id ${id} not found `
+            message: `Account id ${id} not found`
           })
         }
       } catch (err) {
         res.send({
           success: false,
-          messages: 'Bad Request!'
+          messages: 'Bad Request'
         })
       }
     } else {
@@ -198,12 +195,13 @@ module.exports = {
       })
     }
   },
+
   updatePatchAccount: async (req, res) => {
     const id = req.params.id
-    const { name = '', email = '', password = '', noHp = '', companyName = '', position = '' } = req.body
+    const { name = '', email = '', password = '', noHp = '' } = req.body
     const salt = bcrypt.genSaltSync(10)
     const encryptPassword = bcrypt.hashSync(password, salt)
-    if (name.trim() || email.trim() || password.trim() || noHp.trim() || companyName.trim() || position.trim()) {
+    if (name.trim() || email.trim() || password.trim() || noHp.trim()) {
       const setData = {
         ...req.body,
         password: encryptPassword
@@ -215,8 +213,8 @@ module.exports = {
         const select = await selectAccountModel(id)
         if (select.length) {
           const result = await updatePatchAccountModel(data, id)
+          updatedAtDate(id)
           if (result.affectedRows) {
-            updatedAtDate(id)
             res.send({
               success: true,
               messages: `Account With id ${id} has been Updated`
@@ -236,13 +234,13 @@ module.exports = {
       } catch (err) {
         res.send({
           success: false,
-          message: 'Bad Request!'
+          message: 'Bad Request'
         })
       }
     } else {
       res.send({
         success: false,
-        message: 'Field must be filled'
+        message: 'Fields is empty'
       })
     }
   },
@@ -251,8 +249,8 @@ module.exports = {
     const { id } = req.params
     try {
       const select = await selectAccountModel(id)
+      const result = await deleteAccountModel(id)
       if (select.length) {
-        const result = await deleteAccountModel(id)
         if (result.affectedRows) {
           res.send({
             success: true,
@@ -267,7 +265,7 @@ module.exports = {
       } else {
         res.send({
           success: false,
-          message: 'Data Project Not Found'
+          message: 'Data Worker Not Found'
         })
       }
     } catch (err) {

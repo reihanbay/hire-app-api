@@ -4,7 +4,7 @@ module.exports = {
 
   postAccount: (setData) => {
     return new Promise((resolve, reject) => {
-      db.query('INSERT INTO account_worker SET ?', setData, (err, result) => {
+      db.query('INSERT INTO user SET ?', setData, (err, result) => {
         if (!err) {
           const newResult = {
             id: result.insertId,
@@ -20,7 +20,7 @@ module.exports = {
   },
   checkEmailModel: (email) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT email FROM account_worker WHERE email = ?', email, (err, result) => {
+      db.query('SELECT email FROM user WHERE email = ?', email, (err, result) => {
         if (!err) {
           resolve(result)
         } else {
@@ -31,7 +31,7 @@ module.exports = {
   },
   loginAccountModel: (email) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT idAccount, email, password, status FROM account_worker WHERE email = ?', email, (err, result) => {
+      db.query('SELECT idAccount, email, password, status, role FROM user WHERE email = ?', email, (err, result) => {
         if (!err) {
           resolve(result)
         } else {
@@ -43,8 +43,9 @@ module.exports = {
 
   getAccountModel: (searchKey, searchValue, limit, offset) => {
     return new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM account_worker WHERE ${searchKey} LIKE '%${searchValue}%' LIMIT ${limit} OFFSET ${offset}`, (err, result, _fields) => {
+      db.query(`SELECT idAccount, name, email, password, noHp, status, role FROM user WHERE ${searchKey} LIKE '%${searchValue}%' LIMIT ${limit} OFFSET ${offset}`, (err, result, _fields) => {
         if (!err) {
+          delete result[0].password
           resolve(result)
         } else {
           reject(new Error(err))
@@ -54,8 +55,9 @@ module.exports = {
   },
   getAccountByIdModel: (id) => {
     return new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM account_worker  WHERE idAccount = ${id}`, (err, result, _field) => {
+      db.query(`SELECT * FROM user WHERE idAccount = ${id}`, (err, result, _field) => {
         if (!err) {
+          delete result[0].password
           resolve(result)
         } else {
           reject(new Error(err))
@@ -65,7 +67,7 @@ module.exports = {
   },
   updateAccountModel: (arr, id) => {
     return new Promise((resolve, reject) => {
-      db.query(`UPDATE account_worker SET name='${arr[0]}', email='${arr[1]}', password='${arr[2]}', noHp=${arr[3]} WHERE idAccount = ?`, id, function (err, result, _fields) {
+      db.query(`UPDATE user SET name='${arr[0]}', email='${arr[1]}', password='${arr[2]}', noHp=${arr[3]} WHERE idAccount = ?`, id, function (err, result, _fields) {
         if (!err) {
           resolve(result)
         } else {
@@ -76,7 +78,7 @@ module.exports = {
   },
   updatePatchAccountModel: (data, id) => {
     return new Promise((resolve, reject) => {
-      var query = `UPDATE account_worker SET ${data} WHERE idAccount = ${id}`
+      var query = `UPDATE user SET ${data} WHERE idAccount = ${id}`
       db.query(query, (err, result, _field) => {
         if (!err) {
           resolve(result)
@@ -89,7 +91,7 @@ module.exports = {
 
   deleteAccountModel: (id) => {
     return new Promise((resolve, reject) => {
-      var query = `DELETE FROM account_worker WHERE idAccount = ${id}`
+      var query = `DELETE FROM user WHERE idAccount = ${id}`
       db.query(query, (err, result, _field) => {
         if (!err) {
           resolve(result)
@@ -111,12 +113,12 @@ module.exports = {
     ('00' + date.getMilliseconds()).slice(-2)
     console.log(date)
     const updatedAt = dateNow
-    db.query(`UPDATE account_worker SET updatedAt='${updatedAt}' WHERE idAccount = ${id}`)
+    db.query(`UPDATE user SET updatedAt='${updatedAt}' WHERE idAccount = ${id}`)
   },
 
   selectAccountModel: (id) => {
     return new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM account_worker WHERE idAccount = ${id}`, (err, result, _field) => {
+      db.query(`SELECT * FROM user WHERE idAccount = ${id}`, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {

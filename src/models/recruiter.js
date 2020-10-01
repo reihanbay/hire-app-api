@@ -49,7 +49,7 @@ module.exports = {
   },
   updateRecruiterModel: (arr, id) => {
     return new Promise((resolve, reject) => {
-      db.query(`UPDATE recruiter SET nameRecruiter='${arr[0]}', sectorCompany='${arr[1]}', city='${arr[2]}', description='${arr[3]}', image='${arr[4]}', instagram='${arr[5]}', linkedin='${arr[6]}', website='${arr[7]}'
+      db.query(`UPDATE recruiter SET nameRecruiter='${arr[0]}', nameCompany='${arr[1]}', position='${arr[2]}', sectorCompany='${arr[3]}', city='${arr[4]}', description='${arr[5]}', image='${arr[6]}', instagram='${arr[7]}', linkedin='${arr[8]}', website='${arr[9]}'
          WHERE idRecruiter = ?`, id, (err, result, _fields) => {
         if (!err) {
           resolve(result)

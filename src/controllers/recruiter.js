@@ -3,12 +3,13 @@ const { createRecruiterModel, checkIdAccountModel, getRecruiterModel, getRecruit
 module.exports = {
 
   createRecruiter: async (req, res) => {
-    const idAccount = req.params.id
-    const { nameRecruiter, sectorCompany, city, description, instagram, linkedin, website } = req.body
+    const { nameRecruiter, nameCompany, position, sectorCompany, city, description, instagram, linkedin, website, idAccount } = req.body
     const image = req.file === undefined ? '' : req.file.filename
-    if (nameRecruiter && sectorCompany && city && description && instagram && linkedin && website && image) {
+    if (nameRecruiter && nameCompany && position && sectorCompany && city && description && instagram && linkedin && website && image && idAccount) {
       const setData = {
         nameRecruiter,
+        nameCompany,
+        position,
         sectorCompany,
         city,
         description,
@@ -122,13 +123,13 @@ module.exports = {
 
   updateRecruiter: async (req, res) => {
     const id = req.params.id
-    const { nameRecruiter, sectorCompany, city, description, instagram, linkedin, website } = req.body
+    const { nameRecruiter, nameCompany, position, sectorCompany, city, description, instagram, linkedin, website } = req.body
     const image = req.file === undefined ? '' : req.file.filename
-    if (nameRecruiter.trim() && sectorCompany.trim() && city.trim() && description.trim() && image.trim() && instagram.trim() && linkedin.trim() && website.trim()) {
+    if (nameRecruiter.trim() && nameCompany.trim() && position.trim() && sectorCompany.trim() && city.trim() && description.trim() && image.trim() && instagram.trim() && linkedin.trim() && website.trim()) {
       try {
         const select = await selectRecruiterModel(id)
         if (select.length) {
-          const result = await updateRecruiterModel([nameRecruiter, sectorCompany, city, description, image, instagram, linkedin, website], id)
+          const result = await updateRecruiterModel([nameRecruiter, nameCompany, position, sectorCompany, city, description, image, instagram, linkedin, website], id)
           if (result.affectedRows) {
             updatedAtDate(id)
             res.send({
@@ -163,9 +164,9 @@ module.exports = {
 
   updatePatchRecruiter: async (req, res) => {
     const id = req.params.id
-    const { nameRecruiter = '', sectorCompany = '', city = '', description = '', instagram = '', linkedin = '', website = '' } = req.body
+    const { nameRecruiter = '', nameCompany = '', position = '', sectorCompany = '', city = '', description = '', instagram = '', linkedin = '', website = '' } = req.body
     const image = req.file === undefined ? '' : req.file.filename
-    if (nameRecruiter.trim() || sectorCompany.trim() || city.trim() || description.trim() || image.trim() || instagram.trim() || linkedin.trim() || website.trim()) {
+    if (nameRecruiter.trim() || nameCompany.trim() || position.trim() || sectorCompany.trim() || city.trim() || description.trim() || image.trim() || instagram.trim() || linkedin.trim() || website.trim()) {
       const setData = {
         ...req.body,
         image
