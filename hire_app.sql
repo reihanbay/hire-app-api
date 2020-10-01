@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 28 Sep 2020 pada 07.29
+-- Waktu pembuatan: 01 Okt 2020 pada 19.19
 -- Versi server: 10.4.14-MariaDB
 -- Versi PHP: 7.4.10
 
@@ -24,56 +24,6 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `account_recruiter`
---
-
-CREATE TABLE `account_recruiter` (
-  `idAccount` int(11) NOT NULL,
-  `name` varchar(200) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `password` varchar(100) NOT NULL,
-  `noHp` int(20) NOT NULL,
-  `companyName` varchar(100) NOT NULL,
-  `position` varchar(30) NOT NULL,
-  `status` tinyint(1) NOT NULL,
-  `createdAt` datetime(6) NOT NULL DEFAULT current_timestamp(6),
-  `updatedAt` datetime(6) NOT NULL DEFAULT current_timestamp(6)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data untuk tabel `account_recruiter`
---
-
-INSERT INTO `account_recruiter` (`idAccount`, `name`, `email`, `password`, `noHp`, `companyName`, `position`, `status`, `createdAt`, `updatedAt`) VALUES
-(1, 'Reihan', 'akudi@yahoo.com', '$2a$10$ebxIvsR.P42Ha0mjCa1Q4eRkfhiev3t0G3IfujV4wHHyWZw8tlENm', 88888881, 'Bukapalak', 'HRD', 0, '2020-09-28 12:15:52.163127', '2020-09-28 12:15:52.163127');
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `account_worker`
---
-
-CREATE TABLE `account_worker` (
-  `idAccount` int(11) NOT NULL,
-  `name` varchar(200) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `password` text NOT NULL,
-  `noHp` int(20) NOT NULL,
-  `status` tinyint(1) NOT NULL,
-  `createdAt` datetime(6) NOT NULL DEFAULT current_timestamp(6),
-  `updatedAt` datetime(6) NOT NULL DEFAULT current_timestamp(6)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data untuk tabel `account_worker`
---
-
-INSERT INTO `account_worker` (`idAccount`, `name`, `email`, `password`, `noHp`, `status`, `createdAt`, `updatedAt`) VALUES
-(1, 'Irfan', 'irfan@gmaile.com', '$2a$10$altAtFCAMPIBeKRPMP.Tqu2aNF7Yu9mdXf1Js6yHgnu6V5YSyqAGy', 2147483647, 0, '2020-09-28 12:20:21.958261', '2020-09-28 12:20:21.958261');
-
--- --------------------------------------------------------
-
---
 -- Struktur dari tabel `experience`
 --
 
@@ -86,13 +36,6 @@ CREATE TABLE `experience` (
   `end` date NOT NULL,
   `idWorker` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data untuk tabel `experience`
---
-
-INSERT INTO `experience` (`idExperience`, `companyName`, `description`, `workPosition`, `start`, `end`, `idWorker`) VALUES
-(1, 'Bukapalak', 'jadi satpam', 'jadi satpam', '2010-12-20', '2020-12-20', 1);
 
 -- --------------------------------------------------------
 
@@ -113,13 +56,6 @@ CREATE TABLE `hire` (
   `updatedAt` datetime(6) NOT NULL DEFAULT current_timestamp(6)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data untuk tabel `hire`
---
-
-INSERT INTO `hire` (`idHire`, `projectJob`, `message`, `statusConfirm`, `dateConfirm`, `price`, `idWorker`, `idProject`, `createdAt`, `updatedAt`) VALUES
-(3, 'Make API Android', 'gelem ra?', 0, '2020-12-20', 22000000, 1, 1, '2020-09-28 12:28:19.926186', '2020-09-28 12:28:19.926186');
-
 -- --------------------------------------------------------
 
 --
@@ -134,13 +70,6 @@ CREATE TABLE `portfolio` (
   `image` varchar(200) NOT NULL,
   `idWorker` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data untuk tabel `portfolio`
---
-
-INSERT INTO `portfolio` (`idPortfolio`, `namePortfolio`, `linkRepository`, `typePortfolio`, `image`, `idWorker`) VALUES
-(1, 'Mobile Apps Calculator', 'neng Github', 'mobile', 'image-1601270505829-gajah mada.png', 1);
 
 -- --------------------------------------------------------
 
@@ -160,13 +89,6 @@ CREATE TABLE `projects` (
   `updatedAt` datetime(6) NOT NULL DEFAULT current_timestamp(6)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data untuk tabel `projects`
---
-
-INSERT INTO `projects` (`idProject`, `image`, `nameProject`, `description`, `deadline`, `idRecruiter`, `idWorker`, `createdAt`, `updatedAt`) VALUES
-(1, 'image-1601270882400-gajah mada.png', 'Sistem Absensi Kantor Bukapalak', 'Membuat sistem untuk absensi', '2020-12-22', 1, 1, '2020-09-28 12:28:02.471438', '2020-09-28 12:28:02.471438');
-
 -- --------------------------------------------------------
 
 --
@@ -176,6 +98,8 @@ INSERT INTO `projects` (`idProject`, `image`, `nameProject`, `description`, `dea
 CREATE TABLE `recruiter` (
   `idRecruiter` int(11) NOT NULL,
   `nameRecruiter` varchar(100) NOT NULL,
+  `nameCompany` varchar(100) NOT NULL,
+  `position` varchar(100) NOT NULL,
   `sectorCompany` varchar(100) NOT NULL,
   `city` varchar(100) NOT NULL,
   `description` text NOT NULL,
@@ -187,13 +111,6 @@ CREATE TABLE `recruiter` (
   `createdAt` datetime(6) NOT NULL DEFAULT current_timestamp(6),
   `updatedAt` datetime(6) NOT NULL DEFAULT current_timestamp(6)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data untuk tabel `recruiter`
---
-
-INSERT INTO `recruiter` (`idRecruiter`, `nameRecruiter`, `sectorCompany`, `city`, `description`, `image`, `instagram`, `linkedin`, `website`, `idAccount`, `createdAt`, `updatedAt`) VALUES
-(1, 'Reihan', 'Financial', 'Purwokerto', 'Lorem Ipsum Color si jamet', 'image-1601270269857-gajah mada.png', '@hai_ean', 'reihan bayzaky', 'bukapalak.com', 1, '2020-09-28 12:17:49.929271', '2020-09-28 12:17:49.929271');
 
 -- --------------------------------------------------------
 
@@ -207,19 +124,23 @@ CREATE TABLE `skill` (
   `skill` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data untuk tabel `skill`
+-- Struktur dari tabel `user`
 --
 
-INSERT INTO `skill` (`idSkill`, `idWorker`, `skill`) VALUES
-(1, 1, 'mewarnai'),
-(2, 1, 'mewarnai'),
-(3, 1, 'mewarnai'),
-(4, 1, 'mewarnai'),
-(5, 1, 'mewarnai'),
-(6, 1, 'mewarnai'),
-(7, 1, 'mewarnai'),
-(8, 1, 'mewarnai');
+CREATE TABLE `user` (
+  `idAccount` int(11) NOT NULL,
+  `name` varchar(200) NOT NULL,
+  `email` text NOT NULL,
+  `password` text NOT NULL,
+  `noHp` int(20) NOT NULL,
+  `role` enum('admin','recruiter','worker') NOT NULL,
+  `status` tinyint(1) NOT NULL,
+  `createdAt` datetime(6) NOT NULL DEFAULT current_timestamp(6),
+  `updatedAt` datetime(6) NOT NULL DEFAULT current_timestamp(6)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -242,27 +163,8 @@ CREATE TABLE `worker` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data untuk tabel `worker`
---
-
-INSERT INTO `worker` (`idWorker`, `nameWorker`, `jobTitle`, `statusJob`, `city`, `workPlace`, `description`, `image`, `idAccount`, `createdAt`, `updatedAt`) VALUES
-(1, 'Hakim', 'Android Dev', 'freelance', 'Purwokerto, Jawa Tengah, Indonesia', 'RuangGuru', 'Lorem ipsum color si jamet', 'image-1601270481451-srikandi.png', 1, '2020-09-28 12:21:21.508300', '2020-09-28 12:21:21.508300');
-
---
 -- Indexes for dumped tables
 --
-
---
--- Indeks untuk tabel `account_recruiter`
---
-ALTER TABLE `account_recruiter`
-  ADD PRIMARY KEY (`idAccount`);
-
---
--- Indeks untuk tabel `account_worker`
---
-ALTER TABLE `account_worker`
-  ADD PRIMARY KEY (`idAccount`);
 
 --
 -- Indeks untuk tabel `experience`
@@ -309,6 +211,12 @@ ALTER TABLE `skill`
   ADD KEY `idWorker` (`idWorker`);
 
 --
+-- Indeks untuk tabel `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`idAccount`);
+
+--
 -- Indeks untuk tabel `worker`
 --
 ALTER TABLE `worker`
@@ -320,58 +228,52 @@ ALTER TABLE `worker`
 --
 
 --
--- AUTO_INCREMENT untuk tabel `account_recruiter`
---
-ALTER TABLE `account_recruiter`
-  MODIFY `idAccount` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT untuk tabel `account_worker`
---
-ALTER TABLE `account_worker`
-  MODIFY `idAccount` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT untuk tabel `experience`
 --
 ALTER TABLE `experience`
-  MODIFY `idExperience` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idExperience` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `hire`
 --
 ALTER TABLE `hire`
-  MODIFY `idHire` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idHire` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `portfolio`
 --
 ALTER TABLE `portfolio`
-  MODIFY `idPortfolio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idPortfolio` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `idProject` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idProject` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `recruiter`
 --
 ALTER TABLE `recruiter`
-  MODIFY `idRecruiter` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idRecruiter` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `skill`
 --
 ALTER TABLE `skill`
-  MODIFY `idSkill` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idSkill` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `user`
+--
+ALTER TABLE `user`
+  MODIFY `idAccount` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `worker`
 --
 ALTER TABLE `worker`
-  MODIFY `idWorker` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idWorker` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
@@ -407,7 +309,7 @@ ALTER TABLE `projects`
 -- Ketidakleluasaan untuk tabel `recruiter`
 --
 ALTER TABLE `recruiter`
-  ADD CONSTRAINT `recruiter_ibfk_1` FOREIGN KEY (`idAccount`) REFERENCES `account_recruiter` (`idAccount`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `recruiter_ibfk_1` FOREIGN KEY (`idAccount`) REFERENCES `user` (`idAccount`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ketidakleluasaan untuk tabel `skill`
@@ -419,7 +321,7 @@ ALTER TABLE `skill`
 -- Ketidakleluasaan untuk tabel `worker`
 --
 ALTER TABLE `worker`
-  ADD CONSTRAINT `worker_ibfk_1` FOREIGN KEY (`idAccount`) REFERENCES `account_worker` (`idAccount`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `worker_ibfk_1` FOREIGN KEY (`idAccount`) REFERENCES `user` (`idAccount`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
