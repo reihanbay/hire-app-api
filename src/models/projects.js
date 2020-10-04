@@ -36,17 +36,6 @@ module.exports = {
       })
     })
   },
-  getProjectByIdRecruiterModel: (id) => {
-    return new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM projects  WHERE idRecruiter = ${id}`, (err, result, _field) => {
-        if (!err) {
-          resolve(result)
-        } else {
-          reject(new Error(err))
-        }
-      })
-    })
-  },
 
   updateProjectModel: (arr, id) => {
     return new Promise((resolve, reject) => {
