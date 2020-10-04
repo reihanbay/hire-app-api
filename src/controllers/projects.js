@@ -3,15 +3,14 @@ const { createProjectModel, getProjectModel, getProjectByIdModel, updateProjectM
 module.exports = {
 
   createProject: async (req, res) => {
-    const { nameProject, description, deadline, idRecruiter, idWorker } = req.body // harus sama yang diinputkan di postman
-    if (nameProject && description && deadline && idRecruiter && idWorker) {
+    const { nameProject, description, deadline, idRecruiter } = req.body // harus sama yang diinputkan di postman
+    if (nameProject && description && deadline && idRecruiter) {
       try {
         const setData = {
           nameProject,
           description,
           deadline,
           idRecruiter,
-          idWorker,
           image: req.file === undefined ? '' : req.file.filename
         }
         const create = await createProjectModel(setData)

@@ -39,6 +39,18 @@ module.exports = {
       })
     })
   },
+
+  getPortfolioByIdWorkerModel: (idWorker) => {
+    return new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM portfolio  WHERE idWorker = ${idWorker}`, (err, result, _field) => {
+        if (!err) {
+          resolve(result)
+        } else {
+          reject(new Error(err))
+        }
+      })
+    })
+  },
   updatePortfolioModel: (arr, id) => {
     return new Promise((resolve, reject) => {
       db.query(`UPDATE portfolio SET namePortfolio='${arr[0]}', linkRepository='${arr[1]}', typePortfolio='${arr[2]}', image='${arr[3]}', idWorker=${arr[4]}

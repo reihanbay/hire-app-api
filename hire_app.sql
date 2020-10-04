@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 01 Okt 2020 pada 19.59
+-- Waktu pembuatan: 04 Okt 2020 pada 15.50
 -- Versi server: 10.4.14-MariaDB
 -- Versi PHP: 7.4.10
 
@@ -84,7 +84,6 @@ CREATE TABLE `projects` (
   `description` text NOT NULL,
   `deadline` date NOT NULL,
   `idRecruiter` int(11) NOT NULL,
-  `idWorker` int(11) NOT NULL,
   `createdAt` datetime(6) NOT NULL DEFAULT current_timestamp(6),
   `updatedAt` datetime(6) NOT NULL DEFAULT current_timestamp(6)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -193,7 +192,6 @@ ALTER TABLE `portfolio`
 --
 ALTER TABLE `projects`
   ADD PRIMARY KEY (`idProject`),
-  ADD KEY `idWorker` (`idWorker`),
   ADD KEY `idRecruiter` (`idRecruiter`);
 
 --
@@ -302,8 +300,7 @@ ALTER TABLE `portfolio`
 -- Ketidakleluasaan untuk tabel `projects`
 --
 ALTER TABLE `projects`
-  ADD CONSTRAINT `projects_ibfk_2` FOREIGN KEY (`idRecruiter`) REFERENCES `recruiter` (`idRecruiter`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `projects_ibfk_3` FOREIGN KEY (`idWorker`) REFERENCES `worker` (`idWorker`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `projects_ibfk_2` FOREIGN KEY (`idRecruiter`) REFERENCES `recruiter` (`idRecruiter`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ketidakleluasaan untuk tabel `recruiter`

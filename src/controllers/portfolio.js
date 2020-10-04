@@ -1,4 +1,4 @@
-const { createPortfolioModel, getPortfolioModel, getPortfolioByIdModel, updatePortfolioModel, updatePatchPortfolioModel, deletePortfolioModel, selectPortfolioModel } = require('../models/portfolio')
+const { createPortfolioModel, getPortfolioModel, getPortfolioByIdModel, getPortfolioByIdWorkerModel, updatePortfolioModel, updatePatchPortfolioModel, deletePortfolioModel, selectPortfolioModel } = require('../models/portfolio')
 
 module.exports = {
 
@@ -94,6 +94,29 @@ module.exports = {
         res.send({
           success: false,
           message: `Data Portfolio ${id} not found`
+        })
+      }
+    } catch (err) {
+      res.send({
+        success: false,
+        message: 'Bad Request'
+      })
+    }
+  },
+  getDataPortfolioByIdWorker: async (req, res) => {
+    const { idWorker } = req.params
+    try {
+      const result = await getPortfolioByIdWorkerModel(idWorker)
+      if (result.length) {
+        res.send({
+          success: true,
+          message: `Data Portfolio ${idWorker}`,
+          data: result[0]
+        })
+      } else {
+        res.send({
+          success: false,
+          message: `Data Portfolio ${idWorker} not found`
         })
       }
     } catch (err) {

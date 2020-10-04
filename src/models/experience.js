@@ -29,7 +29,7 @@ module.exports = {
   },
   getExperienceByIdModel: (id) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM experience  WHERE idExperience = ?', id, (err, result, _field) => {
+      db.query('SELECT * FROM experience  WHERE idWorker = ?', id, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {

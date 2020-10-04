@@ -16,6 +16,8 @@ const experienceRouter = require('./src/routes/experience')
 const portofolioRouter = require('./src/routes/portfolio')
 const skillRouter = require('./src/routes/skill')
 
+app.use('/uploads', express.static('./uploads'))
+
 app.use((request, response, next) => {
   console.log('cors activated')
   response.header('Access-Control-Allow-Origin', '*')
