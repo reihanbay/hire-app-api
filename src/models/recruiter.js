@@ -38,7 +38,7 @@ module.exports = {
 
   getRecruiterByIdModel: (id) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM recruiter  WHERE idRecruiter = ?', id, (err, result, _field) => {
+      db.query('SELECT * FROM recruiter  WHERE idAccount = ?', id, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {
