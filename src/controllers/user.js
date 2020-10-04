@@ -59,7 +59,7 @@ module.exports = {
         if (checkPassword) {
           const { idAccount, name, email, status, role } = checkData[0]
           let payload = { idAccount, name, email, status, role }
-          const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '1h' })
+          const token = jwt.sign(payload, process.env.JWT_KEY, {})
           payload = { ...payload, token }
           console.log(payload)
           res.send({

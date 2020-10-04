@@ -67,7 +67,7 @@ module.exports = {
   },
   updateAccountModel: (arr, id) => {
     return new Promise((resolve, reject) => {
-      db.query(`UPDATE user SET name='${arr[0]}', email='${arr[1]}', password='${arr[2]}', noHp=${arr[3]} WHERE idAccount = ?`, id, function (err, result, _fields) {
+      db.query(`UPDATE user SET name='${arr[0]}', email='${arr[1]}', password='${arr[2]}', noHp='${arr[3]}' WHERE idAccount = ?`, id, function (err, result, _fields) {
         if (!err) {
           resolve(result)
         } else {

@@ -104,19 +104,19 @@ module.exports = {
     }
   },
   getDataPortfolioByIdWorker: async (req, res) => {
-    const { idWorker } = req.params
+    const { id } = req.params
     try {
-      const result = await getPortfolioByIdWorkerModel(idWorker)
+      const result = await getPortfolioByIdWorkerModel(id)
       if (result.length) {
         res.send({
           success: true,
-          message: `Data Portfolio ${idWorker}`,
+          message: `Data Portfolio ${id}`,
           data: result[0]
         })
       } else {
         res.send({
           success: false,
-          message: `Data Portfolio ${idWorker} not found`
+          message: `Data Portfolio ${id} not found`
         })
       }
     } catch (err) {

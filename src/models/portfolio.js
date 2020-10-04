@@ -40,9 +40,9 @@ module.exports = {
     })
   },
 
-  getPortfolioByIdWorkerModel: (idWorker) => {
+  getPortfolioByIdWorkerModel: (id) => {
     return new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM portfolio  WHERE idWorker = ${idWorker}`, (err, result, _field) => {
+      db.query(`SELECT * FROM portfolio  WHERE idWorker = ${id}`, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {
