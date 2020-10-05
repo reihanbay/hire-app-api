@@ -105,7 +105,7 @@ module.exports = {
         res.send({
           success: true,
           message: `Data Recruiter ${id}`,
-          data: result[0]
+          data: result
         })
       } else {
         res.send({
