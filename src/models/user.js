@@ -31,7 +31,7 @@ module.exports = {
   },
   loginAccountModel: (email) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT idAccount, email, password, status, role FROM user WHERE email = ?', email, (err, result) => {
+      db.query('SELECT idAccount, name, email, password, status, role FROM user WHERE email = ?', email, (err, result) => {
         if (!err) {
           resolve(result)
         } else {
