@@ -115,7 +115,7 @@ module.exports = {
     } catch (err) {
       res.send({
         success: false,
-        message: 'Bad Request'
+        message: err.message
       })
     }
   },
