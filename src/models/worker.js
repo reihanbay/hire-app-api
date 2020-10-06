@@ -53,7 +53,7 @@ module.exports = {
 
   getWorkerByIdModel: (id) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM worker  WHERE idWorker = ?', id, (err, result, _field) => {
+      db.query('SELECT worker.*, GROUP_CONCAT(skill.skill) AS skill FROM worker INNER JOIN skill ON worker.idWorker = skill.idWorker WHERE idWorker = ?', id, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {
