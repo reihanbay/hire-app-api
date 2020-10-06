@@ -6,7 +6,6 @@ const morgan = require('morgan')
 require('dotenv').config()
 app.use(bodyParser.urlencoded({ extended: false }))
 
-// const accountWorkerRouter = require('./src/routes/accountWorkerss
 const userRouter = require('./src/routes/user')
 const workerRouter = require('./src/routes/worker')
 const recruiterRouter = require('./src/routes/recruiter')
