@@ -48,7 +48,7 @@ module.exports = {
     }
 
     if (!limit) {
-      limit = 3
+      limit = 0
     } else {
       limit = parseInt(limit) // menghindari inputan yang bukan string
     }
@@ -71,7 +71,7 @@ module.exports = {
       } else {
         res.send({
           success: false,
-          messages: 'There is no worker on list'
+          messages: 'There is no project on list'
         })
       }
     } catch (err) {
