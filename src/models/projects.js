@@ -27,8 +27,7 @@ module.exports = {
 
   getProjectByIdModel: (id) => {
     return new Promise((resolve, reject) => {
-      // SELECT projects.*, GROUP_CONCAT(worker.nameWorker) AS worker FROM projects INNER JOIN hire ON projects.idProject = hire.idProject INNER JOIN worker ON hire.idWorker = worker.idWorker WHERE projects.idProject = ${id} GROUP BY idProject
-      db.query(`SELECT GROUP_CONCAT(worker.nameWorker) AS worker FROM hire INNER JOIN worker ON hire.idWorker = worker.idWorker INNER JOIN projects ON hire.idProject = projects.idProject WHERE projects.idProject = ${id} GROUP BY projects.idProject`, (err, result, _field) => {
+      db.query(`SELECT projects.*, GROUP_CONCAT(IFNULL(worker.nameWorker, NULL)) AS worker FROM projects INNER JOIN hire ON projects.idProject = hire.idProject INNER JOIN worker ON hire.idWorker = worker.idWorker WHERE projects.idProject = ${id} GROUP BY idProject`, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {
@@ -37,7 +36,6 @@ module.exports = {
       })
     })
   },
-
   updateProjectModel: (arr, id) => {
     return new Promise((resolve, reject) => {
       db.query(`UPDATE projects SET image='${arr[0]}', nameProject='${arr[1]}', description='${arr[2]}', deadline='${arr[3]}', idRecruiter='${arr[4]}', idWorker='${arr[5]}'

@@ -1,4 +1,4 @@
-const { createProjectModel, getProjectModel, getProjectByIdModel, updateProjectModel, updatePatchProjectModel, deleteProjectModel, selectProjectModel, updatedAtDate } = require('../models/projects')
+const { createProjectModel, getProjectModel, getProjectByIdModel, updateProjectModel, updatePatchProjectModel, deleteProjectModel, selectProjectModel, updatedAtDate, checkWorkerModel } = require('../models/projects')
 
 module.exports = {
 
@@ -85,22 +85,19 @@ module.exports = {
   getDataProjectById: async (req, res) => {
     const { id } = req.params
     try {
-      const result = await getProjectByIdModel(id)
-      if (result == null) {
-        result[0] = 'not Any Worker'
+      var result = await getProjectByIdModel(id)
+      if (result.length) {
+        res.send({
+          success: true,
+          message: `Data Project ${id}`,
+          data: result[0]
+        })
+      } else {
+        res.send({
+          success: false,
+          message: `Data Account ${id} not found`
+        })
       }
-      res.send({
-        success: true,
-        message: `Data Project ${id}`,
-        data: result[0]
-      })
-      // if (result.length) {
-      // } else {
-      //   res.send({
-      //     success: false,
-      //     message: `Data Account ${id} not found`
-      //   })
-      // }
     } catch (err) {
       res.send({
         success: false,
