@@ -27,7 +27,8 @@ module.exports = {
 
   getProjectByIdModel: (id) => {
     return new Promise((resolve, reject) => {
-      db.query(`SELECT projects.*, GROUP_CONCAT(worker.nameWorker) AS worker FROM projects INNER JOIN hire ON projects.idProject = hire.idProject INNER JOIN worker ON hire.idWorker = worker.idWorker WHERE projects.idProject = ${id} GROUP BY idProject`, (err, result, _field) => {
+      // SELECT projects.*, GROUP_CONCAT(worker.nameWorker) AS worker FROM projects INNER JOIN hire ON projects.idProject = hire.idProject INNER JOIN worker ON hire.idWorker = worker.idWorker WHERE projects.idProject = ${id} GROUP BY idProject
+      db.query(`SELECT GROUP_CONCAT(worker.nameWorker) AS worker FROM hire INNER JOIN worker ON hire.idWorker = worker.idWorker INNER JOIN projects ON hire.idProject = projects.idProject WHERE projects.idProject = ${id} GROUP BY idHire`, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {
