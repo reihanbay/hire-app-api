@@ -1,4 +1,4 @@
-const { createProjectModel, getProjectModel, getProjectByIdModel, updateProjectModel, updatePatchProjectModel, deleteProjectModel, selectProjectModel, updatedAtDate, checkWorkerModel } = require('../models/projects')
+const { createProjectModel, getProjectModel, getProjectByIdModel, updateProjectModel, updatePatchProjectModel, deleteProjectModel, selectProjectModel, updatedAtDate } = require('../models/projects')
 
 module.exports = {
 
