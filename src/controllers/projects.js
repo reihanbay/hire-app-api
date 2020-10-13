@@ -86,6 +86,9 @@ module.exports = {
     const { id } = req.params
     try {
       const result = await getProjectByIdModel(id)
+      if (result == null) {
+        result[0] = 'not Any Worker'
+      }
       res.send({
         success: true,
         message: `Data Project ${id}`,
