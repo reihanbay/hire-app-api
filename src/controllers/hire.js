@@ -43,7 +43,7 @@ module.exports = {
     }
 
     if (!limit) {
-      limit = 0
+      limit = 10
     } else {
       limit = parseInt(limit) // menghindari inputan yang bukan string
     }
