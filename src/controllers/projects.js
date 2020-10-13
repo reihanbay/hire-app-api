@@ -86,18 +86,18 @@ module.exports = {
     const { id } = req.params
     try {
       const result = await getProjectByIdModel(id)
-      if (result.length) {
-        res.send({
-          success: true,
-          message: `Data Project ${id}`,
-          data: result[0]
-        })
-      } else {
-        res.send({
-          success: false,
-          message: `Data Account ${id} not found`
-        })
-      }
+      res.send({
+        success: true,
+        message: `Data Project ${id}`,
+        data: result[0]
+      })
+      // if (result.length) {
+      // } else {
+      //   res.send({
+      //     success: false,
+      //     message: `Data Account ${id} not found`
+      //   })
+      // }
     } catch (err) {
       res.send({
         success: false,
