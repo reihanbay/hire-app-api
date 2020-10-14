@@ -86,7 +86,7 @@ module.exports = {
     const { id } = req.params
     try {
       var result = await getProjectByIdModel(id)
-      console.log(result[0])
+      console.log(result)
       if (result.length) {
         res.send({
           success: true,
