@@ -97,6 +97,7 @@ module.exports = {
         res.send({
           success: false,
           message: `Data Account ${id} not found`,
+          data: result[0]
         })
       }
     } catch (err) {
