@@ -27,7 +27,7 @@ module.exports = {
   },
   getHireByIdModel: (id) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM hire  WHERE idHire = ?', id, (err, result, _field) => {
+      db.query('SELECT hire.*, recruiter.nameRecruiter FROM hire LEFT JOIN project ON hire.idProject = project.idProject LEFT JOIN recruiter ON project.idRecruiter = recruiter.idRecruiter WHERE idHire = ?', id, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {
