@@ -16,7 +16,7 @@ module.exports = {
 
   getHireModel: (searchKey, searchValue, limit, offset) => {
     return new Promise((resolve, reject) => {
-      db.query(`SELECT hire.*, recruiter.nameRecruiter AS recruiter FROM hire INNER JOIN project ON hire.idProject = project.idProject INNER JOIN recruiter ON project.idRecruiter = recruiter.idRecruiter WHERE ${searchKey} LIKE '%${searchValue}%' LIMIT ${limit} OFFSET ${offset} GROUP BY idHire`, (err, result, _fields) => {
+      db.query(`SELECT hire.*, recruiter.nameRecruiter AS recruiter FROM hire INNER JOIN project ON hire.idProject = project.idProject INNER JOIN recruiter ON project.idRecruiter = recruiter.idRecruiter WHERE ${searchKey} LIKE '%${searchValue}%' GROUP BY idHire LIMIT ${limit} OFFSET ${offset} `, (err, result, _fields) => {
         if (!err) {
           resolve(result)
         } else {
@@ -27,7 +27,7 @@ module.exports = {
   },
   getHireByIdModel: (id) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT hire.*, recruiter.nameRecruiter AS recruiter FROM hire INNER JOIN project ON hire.idProject = project.idProject INNER JOIN recruiter ON project.idRecruiter = recruiter.idRecruiter WHERE idHire = ?', id, (err, result, _field) => {
+      db.query(`SELECT hire.* , recruiter.nameRecruiter FROM hire JOIN project ON hire.idProject = project.idProject JOIN recruiter ON project.idRecruiter = recruiter.idRecruiter WHERE hire.idHire = ${id} GROUP BY idHire`, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {
