@@ -27,7 +27,7 @@ module.exports = {
   },
   getHireByIdModel: (id) => {
     return new Promise((resolve, reject) => {
-      db.query(`SELECT hire.* , recruiter.nameRecruiter FROM hire JOIN project ON hire.idProject = project.idProject JOIN recruiter ON project.idRecruiter = recruiter.idRecruiter WHERE hire.idHire = ${id} GROUP BY idHire`, (err, result, _field) => {
+      db.query(`SELECT * , recruiter.nameRecruiter FROM hire JOIN project ON hire.idProject = project.idProject JOIN recruiter ON project.idRecruiter = recruiter.idRecruiter WHERE hire.idHire = ${id} GROUP BY idHire`, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {
