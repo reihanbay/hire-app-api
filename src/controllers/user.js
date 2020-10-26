@@ -119,7 +119,7 @@ module.exports = {
         res.send({
           success: true,
           messages: 'list Worker',
-          data: result // result = hasil dari yang diambil dari parameter result
+          data: result[0]
         })
       } else {
         res.send({
