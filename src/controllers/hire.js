@@ -143,7 +143,7 @@ module.exports = {
   },
   updatePatchHire: async (req, res) => {
     const id = req.params.id
-    const body = req.body
+    const { projectJob = '', message = '', statusConfirm = '', dateConfirm = '', price = '' } = req.body
     if (projectJob.trim() || message.trim() || statusConfirm.trim() || dateConfirm.trim() || price.trim()) {
       const data = Object.entries(req.body).map(item => {
         return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
