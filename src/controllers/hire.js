@@ -148,7 +148,6 @@ module.exports = {
       const data = Object.entries(req.body).map(item => {
         return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
       })
-      data.dateConfirm = dateConfirm
       try {
         const select = await selectHireModel(id)
         if (select.length) {
