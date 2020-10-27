@@ -148,10 +148,15 @@ module.exports = {
       const data = Object.entries(req.body).map(item => {
         return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
       })
+
+      const setData = {
+        ...data,
+        dateConfirm
+      }
       try {
         const select = await selectHireModel(id)
         if (select.length) {
-          const result = await updatePatchHireModel(data, id)
+          const result = await updatePatchHireModel(setData, id)
           if (result.affectedRows) {
             updatedAtDate(id)
             res.send({

@@ -50,9 +50,9 @@ module.exports = {
     })
   },
 
-  updatePatchHireModel: (data, id) => {
+  updatePatchHireModel: (setData, id) => {
     return new Promise((resolve, reject) => {
-      var query = `UPDATE hire SET ${data} WHERE idHire = ?`
+      var query = `UPDATE hire SET ${setData} WHERE idHire = ?`
       db.query(query, id, (err, result, _field) => {
         if (!err) {
           resolve(result)
