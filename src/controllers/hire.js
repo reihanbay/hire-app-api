@@ -1,5 +1,4 @@
 const { createHireModel, getHireModel, getHireByIdModel, updateHireModel, updatePatchHireModel, deleteHireModel, selectHireModel, updatedAtDate } = require('../models/hire')
-const { delete } = require('../routes/hire')
 
 module.exports = {
 
