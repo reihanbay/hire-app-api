@@ -144,32 +144,46 @@ module.exports = {
   updatePatchHire: async (req, res) => {
     const id = req.params.id
     const body = req.body
-    try {
-      const select = await selectHireModel(id)
-      if (select.length) {
-        const result = await updatePatchHireModel(body, id)
-        if (result.affectedRows) {
-          updatedAtDate(id)
-          res.send({
-            success: true,
-            messages: `Hire With id ${id} has been Updated`
-          })
+    if (projectJob.trim() || message.trim() || statusConfirm.trim() || dateConfirm.trim() || price.trim()) {
+      const data = Object.entries(req.body).map(item => {
+        return parseInt(item[1]) > 0 ? `${item[0]}=${item[1]}` : `${item[0]}='${item[1]}'`
+      })
+      const setData = {
+        ...data,
+        dateConfirm
+      }
+      try {
+        const select = await selectHireModel(id)
+        if (select.length) {
+          const result = await updatePatchHireModel(setData, id)
+          if (result.affectedRows) {
+            updatedAtDate(id)
+            res.send({
+              success: true,
+              messages: `Hire With id ${id} has been Updated`
+            })
+          } else {
+            res.send({
+              success: false,
+              messages: 'Failed to Update'
+            })
+          }
         } else {
           res.send({
             success: false,
-            messages: 'Failed to Update'
+            messages: 'The Hire not found'
           })
         }
-      } else {
+      } catch (err) {
         res.send({
           success: false,
-          messages: 'The Hire not found'
+          message: 'Bad Request!'
         })
       }
-    } catch (err) {
+    } else {
       res.send({
         success: false,
-        message: 'Bad Request!'
+        message: 'Field must be filled'
       })
     }
   },
