@@ -39,8 +39,7 @@ module.exports = {
           sortWorker = 'ORDER BY nameWorker ASC'
         }
       }
-
-      db.query(`SELECT worker.idWorker, worker.image, worker.nameWorker, worker.jobTitle, worker.statusJob, worker.city, GROUP_CONCAT(skill.skill) AS skill FROM worker INNER JOIN skill ON worker.idWorker = skill.idWorker 
+      db.query(`SELECT worker.idWorker, worker.image, worker.nameWorker, worker.jobTitle, worker.statusJob, worker.city, GROUP_CONCAT(IFFNULL(skill.skill, 'Not Any Skill')) AS skill FROM worker LEFT JOIN skill ON worker.idWorker = skill.idWorker 
       WHERE ${searchKey} LIKE '%${searchValue}%' GROUP BY idWorker ${sortWorker} LIMIT ${limit} OFFSET ${offset} `, (err, result, _field) => {
         if (!err) {
           resolve(result)
