@@ -114,11 +114,11 @@ module.exports = {
 
   selectWorkerModel: (id) => {
     return new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM worker WHERE idAccount = ${id}`, (err, result, _field) => {
+      db.query(`SELECT * FROM worker WHERE idWorker = ${id}`, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {
-          reject(new Error('Id Account not selected'))
+          reject(new Error('Id Worker not selected'))
         }
       })
     })
