@@ -39,8 +39,8 @@ module.exports = {
           sortWorker = 'ORDER BY nameWorker ASC'
         }
       }
-      db.query(`SELECT worker.idWorker, worker.image, worker.nameWorker, worker.jobTitle, worker.statusJob, worker.city, GROUP_CONCAT(IFFNULL(skill.skill, 'Not Any Skill')) AS skill FROM worker LEFT JOIN skill ON worker.idWorker = skill.idWorker 
-      WHERE ${searchKey} LIKE '%${searchValue}%' GROUP BY idWorker ${sortWorker} LIMIT ${limit} OFFSET ${offset} `, (err, result, _field) => {
+      db.query(`SELECT worker.idWorker, worker.image, worker.nameWorker, worker.jobTitle, worker.statusJob, worker.city, GROUP_CONCAT(IFNULL(skill.skill, 'Not Any Skill')) AS skill FROM worker LEFT JOIN skill ON worker.idWorker = skill.idWorker 
+      WHERE worker.idWorker LIKE '%5%' GROUP BY idWorker ${sortWorker} LIMIT ${limit} OFFSET ${offset} `, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {
@@ -52,7 +52,7 @@ module.exports = {
 
   getWorkerByIdModel: (id) => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT worker.idWorker, worker.*, GROUP_CONCAT(IFFNULL(skill.skill, \'Not Any Skill\')) AS skill FROM worker LEFT JOIN skill ON worker.idWorker = skill.idWorker WHERE worker.idWorker = ? GROUP BY idWorker', id, (err, result, _field) => {
+      db.query('SELECT worker.idWorker, worker.*, GROUP_CONCAT(IFNULL(skill.skill, \'not any skill\')) AS skill FROM worker LEFT JOIN skill ON worker.idWorker = skill.idWorker WHERE worker.idWorker = ? GROUP BY idWorker', id, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {
