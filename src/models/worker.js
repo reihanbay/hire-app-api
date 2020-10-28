@@ -40,7 +40,7 @@ module.exports = {
         }
       }
       db.query(`SELECT worker.idWorker, worker.image, worker.nameWorker, worker.jobTitle, worker.statusJob, worker.city, GROUP_CONCAT(IFNULL(skill.skill, 'Not Any Skill')) AS skill FROM worker LEFT JOIN skill ON worker.idWorker = skill.idWorker 
-      WHERE worker.idWorker LIKE '%5%' GROUP BY idWorker ${sortWorker} LIMIT ${limit} OFFSET ${offset} `, (err, result, _field) => {
+      WHERE ${searchKey} LIKE '%${searchValue}%' GROUP BY idWorker ${sortWorker} LIMIT ${limit} OFFSET ${offset} `, (err, result, _field) => {
         if (!err) {
           resolve(result)
         } else {
