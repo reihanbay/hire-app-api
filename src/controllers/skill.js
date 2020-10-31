@@ -58,7 +58,7 @@ module.exports = {
         res.send({
           success: true,
           messages: 'list Skill',
-          data: result
+          data: result[0]
         })
       } else {
         res.send({
