@@ -40,7 +40,7 @@ module.exports = {
     }
 
     if (!limit) {
-      limit = 3
+      limit = 12
     } else {
       limit = parseInt(limit) // menghindari inputan yang bukan string
     }
