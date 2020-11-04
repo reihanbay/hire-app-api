@@ -109,7 +109,7 @@ module.exports = {
   },
   updateProject: async (req, res) => {
     const id = req.params.id
-    const { nameProject, description, deadline, idRecruiter} = req.body
+    const { nameProject, description, deadline, idRecruiter } = req.body
     const image = req.file === undefined ? '' : req.file.filename
     if (image.trim() && nameProject.trim() && description.trim() && deadline.trim() && idRecruiter.trim()) {
       try {

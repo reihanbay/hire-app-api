@@ -38,7 +38,7 @@ module.exports = {
   },
   updateProjectModel: (arr, id) => {
     return new Promise((resolve, reject) => {
-      db.query(`UPDATE projects SET image='${arr[0]}', nameProject='${arr[1]}', description='${arr[2]}', deadline='${arr[3]}', idRecruiter='${arr[4]}', idWorker='${arr[5]}'
+      db.query(`UPDATE projects SET image='${arr[0]}', nameProject='${arr[1]}', description='${arr[2]}', deadline='${arr[3]}', idRecruiter='${arr[4]}'
          WHERE idProject = ${id}`, (err, result, _fields) => {
         if (!err) {
           resolve(result)
