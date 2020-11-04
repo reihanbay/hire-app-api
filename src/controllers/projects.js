@@ -137,7 +137,7 @@ module.exports = {
       } catch (err) {
         res.send({
           success: false,
-          messages: 'error!'
+          messages: `${err}`
         })
       }
     } else {
