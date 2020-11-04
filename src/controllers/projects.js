@@ -109,13 +109,13 @@ module.exports = {
   },
   updateProject: async (req, res) => {
     const id = req.params.id
-    const { nameProject, description, deadline, idRecruiter, idWorker } = req.body
+    const { nameProject, description, deadline, idRecruiter} = req.body
     const image = req.file === undefined ? '' : req.file.filename
-    if (image.trim() && nameProject.trim() && description.trim() && deadline.trim() && idRecruiter.trim() && idWorker.trim()) {
+    if (image.trim() && nameProject.trim() && description.trim() && deadline.trim() && idRecruiter.trim()) {
       try {
         const select = await selectProjectModel(id)
         if (select.length) {
-          const result = await updateProjectModel([image, nameProject, description, deadline, idRecruiter, idWorker], id)
+          const result = await updateProjectModel([image, nameProject, description, deadline, idRecruiter], id)
           if (result.affectedRows) {
             updatedAtDate(id)
             res.send({
@@ -149,9 +149,9 @@ module.exports = {
   },
   updatePatchProject: async (req, res) => {
     const id = req.params.id
-    const { nameProject = '', description = '', deadline = '', idRecruiter = '', idWorker = '' } = req.body
+    const { nameProject = '', description = '', deadline = '', idRecruiter = '' } = req.body
     const image = req.file === undefined ? '' : req.file.filename
-    if (image.trim() || nameProject.trim() || description.trim() || deadline.trim() || idRecruiter.trim() || idWorker.trim()) {
+    if (image.trim() || nameProject.trim() || description.trim() || deadline.trim() || idRecruiter.trim()) {
       const setData = {
         ...req.body,
         image
